@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S.I.T.E.C - Proyecto JACK SOLUTIONS</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- SheetJS for real Excel importing and exporting -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            black: '#000000',
+            darkBg: '#080808',
+            darkCard: '#111111',
+            darkBorder: '#222222',
+            darkBorderHover: '#333333',
+            darkMuted: '#666666',
+            lightText: '#EEEEEE',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080808;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #222222;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #444444;
+    }
+
+    /* Glassmorphism & Borders */
+    .glass-panel {
+      background: rgba(17, 17, 17, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: #0d0d0d;
+      border: 1px solid #1f1f1f;
+      transition: all 0.2s ease-in-out;
+    }
+    .glass-card:hover {
+      border-color: #3d3d3d;
+    }
+
+    /* Monochromatic Pulse Animation */
+    @keyframes monoPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.98); }
+    }
+    .scanner-laser {
+      animation: scanMove 2s infinite ease-in-out;
+    }
+    @keyframes scanMove {
+      0% { top: 10%; opacity: 0.2; }
+      50% { top: 85%; opacity: 0.9; }
+      100% { top: 10%; opacity: 0.2; }
+    }
+  </style>
+</head>
+<body class="bg-black text-lightText font-sans antialiased min-h-screen flex flex-col selection:bg-white selection:text-black">
+
+  <!-- ==================== HEADER & NAVIGATION ==================== -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-darkBorder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('landing')">
+        <div class="w-9 h-9 bg-white text-black font-black flex items-center justify-center rounded-lg text-lg tracking-tighter shadow-lg shadow-white/10">
+          S
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold tracking-wider text-sm text-white flex items-center gap-1.5">
+            S.I.T.E.C <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-gray-300 font-mono">v2.4</span>
+          </span>
+          <span class="text-[10px] text-gray-400 font-mono tracking-widest uppercase">JACK SOLUTIONS</span>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation Tabs -->
+      <nav class="hidden md:flex items-center space-x-1 bg-darkCard p-1 rounded-xl border border-darkBorder">
+        <button onclick="switchTab('landing')" id="nav-landing" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-white bg-white/10">
+          Landing & Planes
+        </button>
+        <button onclick="switchTab('terminal')" id="nav-terminal" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all">
+          Terminal Escáner
+        </button>
+        <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all">
+          Panel Admin
+        </button>
+        <button onclick="switchTab('portal')" id="nav-portal" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all">
+          Portal Empleado
+        </button>
+        <button onclick="switchTab('excel')" id="nav-excel" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all">
+          Integración Excel
+        </button>
+      </nav>
+
+      <!-- Bot Action & Mobile Menu Toggle -->
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleBotModal()" class="flex items-center gap-2 bg-white hover:bg-gray-200 text-black px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-md active:scale-95">
+          <i class="ph-bold ph-robot text-base"></i>
+          <span class="hidden sm:inline">Asistente</span> JACK AI
+        </button>
+        <button onclick="toggleMobileNav()" class="md:hidden text-gray-300 hover:text-white p-2 text-xl">
+          <i class="ph-bold ph-list"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Dropdown Nav -->
+    <div id="mobile-nav" class="hidden md:hidden border-t border-darkBorder bg-darkCard px-4 py-3 space-y-2">
+      <button onclick="switchTab('landing'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Landing & Planes</button>
+      <button onclick="switchTab('terminal'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Terminal Escáner</button>
+      <button onclick="switchTab('admin'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Panel Admin</button>
+      <button onclick="switchTab('portal'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Portal Empleado</button>
+      <button onclick="switchTab('excel'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Integración Excel</button>
+    </div>
+  </header>
+
+  <div id="admin-login-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
+    <form onsubmit="handleAdminLogin(event)" class="glass-panel max-w-sm w-full p-6 rounded-2xl space-y-4 border border-darkBorder">
+      <div>
+        <h2 id="admin-login-title" class="text-lg font-bold text-white">Acceso al Panel Admin</h2>
+        <p class="text-xs text-gray-400 mt-1">Ingresa la contraseña para continuar.</p>
+      </div>
+      <label for="admin-password" class="block text-xs text-gray-300">Contraseña</label>
+      <input type="password" id="admin-password" autocomplete="current-password" class="w-full bg-darkCard border border-darkBorder focus:border-white text-sm text-white px-3.5 py-2.5 rounded-xl outline-none" required />
+      <p id="admin-login-error" class="hidden text-xs text-red-400" role="alert">Contraseña incorrecta. Inténtalo nuevamente.</p>
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="closeAdminLogin()" class="bg-darkCard border border-darkBorder hover:border-white/50 text-white font-semibold px-4 py-2 rounded-xl text-xs">Cancelar</button>
+        <button type="submit" class="bg-white hover:bg-gray-200 text-black font-bold px-4 py-2 rounded-xl text-xs">Ingresar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- 1. LANDING & PLANES SECTION -->
+    <section id="tab-landing" class="space-y-16 py-4">
+      <!-- Hero Banner -->
+      <div class="text-center space-y-6 max-w-4xl mx-auto pt-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
+          <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+          TECNOLOGÍA INDUSTRIAL MONOCROMÁTICA
+        </div>
+        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white uppercase leading-none">
+          Control Total de Pañol y Asistencia
+        </h1>
+        <p class="text-gray-400 text-sm sm:text-lg max-w-2xl mx-auto font-normal">
+          Plataforma avanzada desarrollada por <strong class="text-white">S.I.T.E.C</strong> para el <strong class="text-white">Proyecto JACK SOLUTIONS</strong>. Gestión simplificada por código de barras, NFC y sincronización directa con Excel.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+          <button onclick="switchTab('terminal')" class="bg-white text-black hover:bg-gray-200 font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2">
+            <i class="ph-bold ph-barcode text-lg"></i> Abrir Terminal de Escaneo
+          </button>
+          <button onclick="switchTab('admin')" class="border border-darkBorder hover:border-white/50 bg-darkCard text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all">
+            Ver Panel Admin
+          </button>
+        </div>
+      </div>
+
+      <!-- Feature Grid -->
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="glass-card p-6 rounded-2xl space-y-3">
+          <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
+            <i class="ph-bold ph-qr-code"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Escáner Ultra Rápido</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Compatible con lecturas por código de barras de pistolas USB, cámara integrada y tarjetas de empleados en tiempo real.
+          </p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl space-y-3">
+          <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
+            <i class="ph-bold ph-file-xls"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Conexión Bidireccional Excel</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Importación masiva de herramientas o empleados desde planillas .xlsx y exportación directa de inventario y fichajes.
+          </p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl space-y-3">
+          <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
+            <i class="ph-bold ph-robot"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Bot Inteligente JACK</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Asistente conversacional estilo LOTUS listo para responder dudas, consultar estado de herramientas y reportar averías.
+          </p>
+        </div>
+      </div>
+
+      <!-- Planes Comparativos -->
+      <div class="space-y-8 pt-6">
+        <div class="text-center space-y-2">
+          <h2 class="text-2xl font-bold tracking-tight text-white uppercase">Membresías & Planes JACK SOLUTIONS</h2>
+          <p class="text-xs text-gray-400">Selecciona el nivel de integración adecuado para tu planta o taller</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <!-- Plan Estándar -->
+          <div class="glass-card p-8 rounded-2xl border border-darkBorder flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-gray-400 tracking-wider">ENTRADA DE GAMA</span>
+                <span class="text-xs bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded">NO PREMIUM</span>
+              </div>
+              <h3 class="text-2xl font-bold text-white">Plan Estándar</h3>
+              <p class="text-xs text-gray-400">Para talleres o depósitos que operan mediante código de barras y QR tradicional.</p>
+              <div class="text-3xl font-extrabold text-white font-mono">$0 <span class="text-xs text-gray-500 font-normal">/ mes (Incluso en local)</span></div>
+              
+              <ul class="space-y-3 pt-2 text-xs text-gray-300">
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Escáner por Código de Barras y QR</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Registro de Entradas y Salidas de Pañol</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Fichaje de Asistencia de Personal</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Exportaciones a Excel y CSV</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Asistente Bot Básico Integrado</li>
+                <li class="flex items-center gap-2 text-gray-600 line-through"><i class="ph-bold ph-x"></i> Lector NFC en Lote Automatizado</li>
+                <li class="flex items-center gap-2 text-gray-600 line-through"><i class="ph-bold ph-x"></i> Firma Digital de Recepción</li>
+              </ul>
+            </div>
+            <button onclick="switchTab('terminal')" class="w-full bg-transparent hover:bg-white/5 border border-darkBorder hover:border-white text-white font-semibold py-2.5 rounded-xl text-xs transition-all">
+              Usar Versión Estándar
+            </button>
+          </div>
+
+          <!-- Plan Premium -->
+          <div class="glass-card p-8 rounded-2xl border-2 border-white flex flex-col justify-between space-y-6 relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 w-28 h-28 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-white tracking-wider font-bold">RECOMENDADO INDUSTRIAL</span>
+                <span class="text-xs bg-white text-black font-bold px-2.5 py-0.5 rounded">PREMIUM NFC</span>
+              </div>
+              <h3 class="text-2xl font-bold text-white">Plan Premium NFC</h3>
+              <p class="text-xs text-gray-400">Máxima velocidad con lectura NFC sin contacto, auditoría y firmas digitales.</p>
+              <div class="text-3xl font-extrabold text-white font-mono">$199 <span class="text-xs text-gray-500 font-normal">/ mes</span></div>
+              
+              <ul class="space-y-3 pt-2 text-xs text-gray-200">
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> <strong>Todo lo del Plan Estándar incluido</strong></li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Lectura e identificación por NFC ultrarrápida</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Sincronización en tiempo real con Google Sheets / Excel Online</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Captura de Firma Digital de recepción en pantalla</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Alertas automáticas de mantenimiento preventivo</li>
+                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Soporte prioritario 24/7 directo con S.I.T.E.C</li>
+              </ul>
+            </div>
+            <button onclick="showToast('Solicitud de Plan Premium NFC enviada a S.I.T.E.C', 'info')" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-2.5 rounded-xl text-xs transition-all shadow-lg">
+              Activar Plan Premium NFC
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 2. TERMINAL ESCÁNER (PAÑOL & FICHAJE) -->
+    <section id="tab-terminal" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-darkBorder pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-2">
+            <i class="ph-bold ph-barcode"></i> Terminal Operativa de Escaneo
+          </h2>
+          <p class="text-xs text-gray-400">Módulo rápido para pañoleros y fichaje de personal en planta</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            LECTOR USB / CÁMARA LISTO
+          </span>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-6">
+        <!-- Area del Lector -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="glass-card p-6 rounded-2xl space-y-6 border border-darkBorder">
+            
+            <!-- Selector de Modo -->
+            <div class="grid grid-cols-2 gap-2 p-1 bg-black rounded-xl border border-darkBorder">
+              <button id="mode-tool" onclick="setTerminalMode('tool')" class="py-2 text-xs font-bold rounded-lg bg-white text-black transition-all">
+                <i class="ph-bold ph-wrench"></i> Herramientas / Pañol
+              </button>
+              <button id="mode-attendance" onclick="setTerminalMode('attendance')" class="py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all">
+                <i class="ph-bold ph-user-check"></i> Fichaje Personal
+              </button>
+            </div>
+
+            <!-- Visor del Escáner Simulado -->
+            <div class="relative bg-black rounded-xl border-2 border-dashed border-darkBorder p-8 text-center space-y-4 overflow-hidden min-h-[220px] flex flex-col items-center justify-center">
+              <div class="scanner-laser absolute w-full h-0.5 bg-white shadow-[0_0_15px_#ffffff]"></div>
+              
+              <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-white text-3xl border border-white/10">
+                <i class="ph-bold ph-scan"></i>
+              </div>
+              <div class="space-y-1">
+                <p class="text-sm font-semibold text-white">Escanee el Código de Barras o QR</p>
+                <p class="text-xs text-gray-500">Utilice la pistola lectora o escriba el código manualmente abajo</p>
+              </div>
+            </div>
+
+            <!-- Formulario de Entrada / Acción Manual -->
+            <form onsubmit="handleManualScan(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-mono text-gray-400 uppercase mb-1">Código Identificador (ID / Barras)</label>
+                <div class="relative">
+                  <input type="text" id="scan-input" placeholder="Ej: HER-001 o EMP-101" class="w-full bg-black border border-darkBorder focus:border-white rounded-xl px-4 py-3 text-sm font-mono text-white outline-none transition-all pr-24" required />
+                  <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 bg-white text-black font-bold px-4 rounded-lg text-xs hover:bg-gray-200 transition-all">
+                    Procesar
+                  </button>
+                </div>
+              </div>
+
+              <!-- Botones de Acción para Herramientas -->
+              <div id="tool-action-buttons" class="grid grid-cols-2 gap-3">
+                <button type="button" onclick="executeToolTransaction('OUT')" class="w-full bg-white text-black font-bold py-3 rounded-xl text-xs hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                  <i class="ph-bold ph-arrow-up-right"></i> Prestar / Salida
+                </button>
+                <button type="button" onclick="executeToolTransaction('IN')" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
+                  <i class="ph-bold ph-arrow-down-left"></i> Devolver / Entrada
+                </button>
+              </div>
+
+              <!-- Botones de Acción para Fichaje -->
+              <div id="attendance-action-buttons" class="grid grid-cols-2 gap-3 hidden">
+                <button type="button" onclick="executeAttendanceTransaction('ENTRY')" class="w-full bg-white text-black font-bold py-3 rounded-xl text-xs hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
+                  <i class="ph-bold ph-sign-in"></i> Fichar INGRESO
+                </button>
+                <button type="button" onclick="executeAttendanceTransaction('EXIT')" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
+                  <i class="ph-bold ph-sign-out"></i> Fichar EGRESO
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+        <!-- Códigos de Prueba Rápidos & Últimos Movimientos -->
+        <div class="lg:col-span-5 space-y-6">
+          <!-- Accesos directos de prueba -->
+          <div class="glass-card p-5 rounded-2xl space-y-3">
+            <h3 class="text-xs font-mono uppercase text-gray-400 tracking-wider">Códigos Demo (Haz clic para probar)</h3>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="fillScanInput('HER-001')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">HER-001 (Amoladora)</button>
+              <button onclick="fillScanInput('HER-002')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">HER-002 (Taladro)</button>
+              <button onclick="fillScanInput('EMP-101')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">EMP-101 (Juan Pérez)</button>
+              <button onclick="fillScanInput('EMP-102')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">EMP-102 (María Gómez)</button>
+            </div>
+          </div>
+
+          <!-- Historial Reciente en Terminal -->
+          <div class="glass-card p-5 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-mono uppercase text-gray-400 tracking-wider">Últimos Registros del Turno</h3>
+              <i class="ph-bold ph-clock-counter-clockwise text-gray-500"></i>
+            </div>
+            <div id="terminal-recent-logs" class="space-y-2 max-h-[260px] overflow-y-auto pr-1 text-xs">
+              <!-- Logs populated via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 3. PANEL ADMIN (DASHBOARD) -->
+    <section id="tab-admin" class="hidden space-y-8">
+      <!-- Title & Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-darkBorder pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-2">
+            <i class="ph-bold ph-gauge"></i> Panel de Administración S.I.T.E.C
+          </h2>
+          <p class="text-xs text-gray-400">Gestión de Inventario, Personal y Monitoreo en Tiempo Real</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openAddToolModal()" class="bg-white hover:bg-gray-200 text-black font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <i class="ph-bold ph-plus"></i> Nueva Herramienta
+          </button>
+          <button onclick="openAddEmployeeModal()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <i class="ph-bold ph-user-plus"></i> Nuevo Empleado
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics Row -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card p-5 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+            <span>TOTAL HERRAMIENTAS</span>
+            <i class="ph-bold ph-wrench text-lg text-white"></i>
+          </div>
+          <div id="kpi-total-tools" class="text-3xl font-extrabold font-mono text-white">0</div>
+          <span class="text-[10px] text-gray-500">En catálogo de pañol</span>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+            <span>HERRAMIENTAS EN USO</span>
+            <i class="ph-bold ph-arrow-up-right text-lg text-white"></i>
+          </div>
+          <div id="kpi-tools-in-use" class="text-3xl font-extrabold font-mono text-white">0</div>
+          <span class="text-[10px] text-gray-500">Prestadas actualmente</span>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+            <span>PERSONAL PRESENTES</span>
+            <i class="ph-bold ph-users text-lg text-white"></i>
+          </div>
+          <div id="kpi-employees-present" class="text-3xl font-extrabold font-mono text-white">0</div>
+          <span class="text-[10px] text-gray-500">Fichados en planta</span>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+            <span>MANTENIMIENTO</span>
+            <i class="ph-bold ph-warning-circle text-lg text-white"></i>
+          </div>
+          <div id="kpi-tools-maintenance" class="text-3xl font-extrabold font-mono text-white">0</div>
+          <span class="text-[10px] text-gray-500">Revisión o falla</span>
+        </div>
+      </div>
+
+      <!-- Admin Sub-tabs -->
+      <div class="flex border-b border-darkBorder space-x-6 text-sm font-medium">
+        <button onclick="switchAdminSubtab('inventory')" id="subtab-btn-inventory" class="pb-3 border-b-2 border-white text-white font-bold transition-all">
+          Inventario de Herramientas
+        </button>
+        <button onclick="switchAdminSubtab('employees')" id="subtab-btn-employees" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white transition-all">
+          Personal / Empleados
+        </button>
+        <button onclick="switchAdminSubtab('logs')" id="subtab-btn-logs" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white transition-all">
+          Logs de Movimientos
+        </button>
+      </div>
+
+      <!-- Subtab 1: Inventario -->
+      <div id="admin-subtab-inventory" class="space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <input type="text" id="search-inventory" oninput="renderInventoryTable()" placeholder="Buscar por código, nombre o categoría..." class="w-full sm:w-72 bg-darkCard border border-darkBorder focus:border-white text-xs text-white px-3.5 py-2 rounded-xl outline-none" />
+          <span class="text-xs text-gray-500 font-mono" id="inventory-count">Cargando datos...</span>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden border border-darkBorder">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/60 text-gray-400 font-mono uppercase border-b border-darkBorder">
+                <tr>
+                  <th class="p-3.5">Código</th>
+                  <th class="p-3.5">Nombre / Descripción</th>
+                  <th class="p-3.5">Categoría</th>
+                  <th class="p-3.5">Estado</th>
+                  <th class="p-3.5">Asignado a</th>
+                  <th class="p-3.5 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-table-body" class="divide-y divide-darkBorder font-sans text-gray-300">
+                <!-- JS populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtab 2: Personal -->
+      <div id="admin-subtab-employees" class="hidden space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <input type="text" id="search-employees" oninput="renderEmployeesTable()" placeholder="Buscar empleado por código, DNI o nombre..." class="w-full sm:w-72 bg-darkCard border border-darkBorder focus:border-white text-xs text-white px-3.5 py-2 rounded-xl outline-none" />
+          <span class="text-xs text-gray-500 font-mono" id="employee-count">Cargando datos...</span>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden border border-darkBorder">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/60 text-gray-400 font-mono uppercase border-b border-darkBorder">
+                <tr>
+                  <th class="p-3.5">Código / Legajo</th>
+                  <th class="p-3.5">Nombre y Apellido</th>
+                  <th class="p-3.5">DNI</th>
+                  <th class="p-3.5">Puesto / Rol</th>
+                  <th class="p-3.5">Asistencia</th>
+                  <th class="p-3.5 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="employees-table-body" class="divide-y divide-darkBorder text-gray-300">
+                <!-- JS populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtab 3: Logs auditoría -->
+      <div id="admin-subtab-logs" class="hidden space-y-4">
+        <div class="glass-card rounded-2xl overflow-hidden border border-darkBorder">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/60 text-gray-400 font-mono uppercase border-b border-darkBorder">
+                <tr>
+                  <th class="p-3.5">Fecha y Hora</th>
+                  <th class="p-3.5">Tipo Evento</th>
+                  <th class="p-3.5">Ítem / Empleado</th>
+                  <th class="p-3.5">Detalle</th>
+                </tr>
+              </thead>
+              <tbody id="logs-table-body" class="divide-y divide-darkBorder text-gray-300 font-mono">
+                <!-- JS populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 4. PORTAL EMPLEADO -->
+    <section id="tab-portal" class="hidden space-y-6">
+      <div class="border-b border-darkBorder pb-4">
+        <h2 class="text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-2">
+          <i class="ph-bold ph-user-badge"></i> Portal de Autogestión de Empleado
+        </h2>
+        <p class="text-xs text-gray-400">Consulta tus herramientas a cargo y presenta tu credencial digital</p>
+      </div>
+
+      <!-- Selector de Empleado Simulado -->
+      <div class="glass-card p-4 rounded-xl flex items-center justify-between gap-4 max-w-md">
+        <span class="text-xs text-gray-400 font-mono uppercase">Empleado Activo:</span>
+        <select id="portal-user-select" onchange="updateEmployeePortalView()" class="bg-black border border-darkBorder text-xs text-white rounded-lg px-3 py-1.5 outline-none font-bold">
+          <!-- Populated via JS -->
+        </select>
+      </div>
+
+      <div class="grid md:grid-cols-12 gap-6">
+        <!-- Credencial Digital del Empleado -->
+        <div class="md:col-span-5 space-y-6">
+          <div class="glass-card p-6 rounded-2xl border-2 border-white/20 text-center space-y-4 relative overflow-hidden">
+            <div class="w-16 h-16 bg-white text-black font-black text-2xl rounded-2xl mx-auto flex items-center justify-center">
+              <span id="portal-card-initials">JP</span>
+            </div>
+            <div>
+              <h3 id="portal-card-name" class="text-lg font-bold text-white">Juan Pérez</h3>
+              <p id="portal-card-role" class="text-xs text-gray-400">Operario de Planta</p>
+            </div>
+            <div class="p-3 bg-black rounded-xl border border-darkBorder space-y-2 inline-block">
+              <div id="portal-card-qr" class="font-mono text-xs bg-white text-black p-4 rounded font-bold tracking-widest uppercase">
+                EMP-101
+              </div>
+              <span class="text-[10px] text-gray-500 font-mono block">MUESTRE ESTE CÓDIGO EN ENTRADA O PAÑOL</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Herramientas Asignadas actualmente -->
+        <div class="md:col-span-7 space-y-6">
+          <div class="glass-card p-6 rounded-2xl space-y-4">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i class="ph-bold ph-wrench"></i> Herramientas Actualmente a mi Cargo
+            </h3>
+            <div id="portal-assigned-tools" class="space-y-3">
+              <!-- JS Populated -->
+            </div>
+          </div>
+
+          <!-- Formulario Reporte de Avería -->
+          <div class="glass-card p-6 rounded-2xl space-y-4">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i class="ph-bold ph-warning-amber"></i> Reportar Avería o Falla
+            </h3>
+            <form onsubmit="handleReportFalla(event)" class="space-y-3">
+              <div>
+                <label class="block text-[11px] font-mono text-gray-400 mb-1">CÓDIGO HERRAMIENTA</label>
+                <input type="text" id="report-tool-code" placeholder="Ej: HER-001" class="w-full bg-black border border-darkBorder text-xs text-white p-2.5 rounded-lg outline-none focus:border-white" required />
+              </div>
+              <div>
+                <label class="block text-[11px] font-mono text-gray-400 mb-1">DESCRIPCIÓN DEL PROBLEMA</label>
+                <textarea id="report-description" rows="2" placeholder="Describe la falla observada..." class="w-full bg-black border border-darkBorder text-xs text-white p-2.5 rounded-lg outline-none focus:border-white" required></textarea>
+              </div>
+              <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg text-xs hover:bg-gray-200 transition-all">
+                Enviar Reporte a Pañol
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 5. INTEGRACIÓN EXCEL -->
+    <section id="tab-excel" class="hidden space-y-6">
+      <div class="border-b border-darkBorder pb-4">
+        <h2 class="text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-2">
+          <i class="ph-bold ph-file-xls"></i> Módulo de Integración con Excel / CSV
+        </h2>
+        <p class="text-xs text-gray-400">Importación en lote y exportación oficial de reportes S.I.T.E.C</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Importador -->
+        <div class="glass-card p-6 rounded-2xl space-y-4 border border-darkBorder">
+          <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
+            <i class="ph-bold ph-upload-simple"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Importar Planilla Excel</h3>
+          <p class="text-xs text-gray-400">Cargue un archivo .xlsx o .csv con la lista de herramientas o empleados para importarlos masivamente.</p>
+          <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="processExcelImport(event)" />
+          <button onclick="document.getElementById('excel-file-input').click()" class="w-full bg-white text-black font-bold py-2.5 rounded-xl text-xs hover:bg-gray-200 transition-all">
+            Seleccionar Archivo Excel
+          </button>
+        </div>
+
+        <!-- Exportador -->
+        <div class="glass-card p-6 rounded-2xl space-y-4 border border-darkBorder">
+          <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
+            <i class="ph-bold ph-download-simple"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Exportar Inventario</h3>
+          <p class="text-xs text-gray-400">Descargue el catálogo de herramientas y estado actual formateado en Excel listo para auditoría.</p>
+          <button onclick="exportInventoryToExcel()" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-xs transition-all">
+            Descargar Excel Herramientas
+          </button>
+        </div>
+
+        <!-- Plantilla Modelo -->
+        <div class="glass-card p-6 rounded-2xl space-y-4 border border-darkBorder">
+          <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
+            <i class="ph-bold ph-file-text"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Plantilla Modelo</h3>
+          <p class="text-xs text-gray-400">Obtenga la plantilla estándar para completar los datos antes de realizar una carga masiva.</p>
+          <button onclick="downloadSampleTemplate()" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-xs transition-all">
+            Descargar Plantilla Demo
+          </button>
+        </div>
+      </div>
+
+      <!-- Previsualización de Datos Importados -->
+      <div id="excel-preview-container" class="glass-card p-6 rounded-2xl space-y-4 hidden">
+        <h3 class="text-sm font-bold text-white uppercase font-mono">Previsualización de Datos Detectados</h3>
+        <div class="overflow-x-auto max-h-60">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-black text-gray-400 font-mono">
+              <tr id="excel-preview-head"></tr>
+            </thead>
+            <tbody id="excel-preview-body" class="divide-y divide-darkBorder text-gray-300"></tbody>
+          </table>
+        </div>
+        <button onclick="confirmExcelImport()" class="bg-white text-black font-bold px-4 py-2 rounded-xl text-xs hover:bg-gray-200">
+          Confirmar e Insertar en Sistema
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal Agregar Herramienta -->
+  <div id="modal-add-tool" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="glass-panel max-w-md w-full p-6 rounded-2xl space-y-4 border border-darkBorder">
+      <div class="flex items-center justify-between border-b border-darkBorder pb-3">
+        <h3 class="text-base font-bold text-white uppercase">Agregar Nueva Herramienta</h3>
+        <button onclick="closeAddToolModal()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
+      </div>
+      <form onsubmit="saveNewTool(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">CÓDIGO / BARRAS</label>
+          <input type="text" id="new-tool-code" placeholder="Ej: HER-005" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">NOMBRE / DESCRIPCIÓN</label>
+          <input type="text" id="new-tool-name" placeholder="Ej: Amoladora Angular 7 pulgadas" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">CATEGORÍA</label>
+          <input type="text" id="new-tool-cat" placeholder="Ej: Eléctricas" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddToolModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancelar</button>
+          <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-gray-200">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Agregar Empleado -->
+  <div id="modal-add-employee" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="glass-panel max-w-md w-full p-6 rounded-2xl space-y-4 border border-darkBorder">
+      <div class="flex items-center justify-between border-b border-darkBorder pb-3">
+        <h3 class="text-base font-bold text-white uppercase">Agregar Nuevo Empleado</h3>
+        <button onclick="closeAddEmployeeModal()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
+      </div>
+      <form onsubmit="saveNewEmployee(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">CÓDIGO / LEGAJO</label>
+          <input type="text" id="new-emp-code" placeholder="Ej: EMP-103" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">NOMBRE Y APELLIDO</label>
+          <input type="text" id="new-emp-name" placeholder="Ej: Carlos Rodríguez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">DNI</label>
+          <input type="text" id="new-emp-dni" placeholder="Ej: 38123456" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">PUESTO / ROL</label>
+          <input type="text" id="new-emp-role" placeholder="Ej: Pañolero / Operario" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddEmployeeModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancelar</button>
+          <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-gray-200">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ==================== WIDGET BOT INTELIGENTE (ESTILO LOTUS) ==================== -->
+  <div id="bot-modal" class="fixed bottom-4 right-4 z-50 w-full max-w-sm hidden">
+    <div class="glass-panel border-2 border-white/20 rounded-2xl shadow-2xl flex flex-col h-[480px] overflow-hidden">
+      <!-- Chat Header -->
+      <div class="bg-black p-3.5 border-b border-darkBorder flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-7 h-7 bg-white text-black rounded-lg flex items-center justify-center font-black text-xs">
+            J
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white tracking-wider">JACK AI ASSISTANT</h4>
+            <span class="text-[9px] text-gray-400 font-mono flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> EN LÍNEA - S.I.T.E.C
+            </span>
+          </div>
+        </div>
+        <button onclick="toggleBotModal()" class="text-gray-400 hover:text-white text-lg">
+          <i class="ph-bold ph-x"></i>
+        </button>
+      </div>
+
+      <!-- Chat Body / Messages -->
+      <div id="bot-chat-body" class="flex-grow p-3 space-y-3 overflow-y-auto text-xs font-sans">
+        <div class="flex items-start gap-2">
+          <div class="w-6 h-6 bg-white text-black rounded flex-shrink-0 flex items-center justify-center font-bold text-[10px]">AI</div>
+          <div class="bg-darkCard border border-darkBorder p-2.5 rounded-xl text-gray-200 max-w-[85%] space-y-1">
+            <p>¡Hola! Soy el asistente inteligente del <strong>Proyecto JACK SOLUTIONS</strong>.</p>
+            <p class="text-[10px] text-gray-400">Puedes preguntarme por herramientas, personal fichado o atajos.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggested Quick Questions -->
+      <div class="p-2 bg-black/40 border-t border-darkBorder flex gap-1.5 overflow-x-auto text-[10px] font-mono">
+        <button onclick="sendQuickBotQuery('¿Dónde está HER-001?')" class="bg-white/5 border border-white/10 hover:border-white px-2 py-1 rounded text-gray-300 whitespace-nowrap">¿Dónde está HER-001?</button>
+        <button onclick="sendQuickBotQuery('¿Quién fichó hoy?')" class="bg-white/5 border border-white/10 hover:border-white px-2 py-1 rounded text-gray-300 whitespace-nowrap">¿Quién fichó hoy?</button>
+        <button onclick="sendQuickBotQuery('Herramientas en mantenimiento')" class="bg-white/5 border border-white/10 hover:border-white px-2 py-1 rounded text-gray-300 whitespace-nowrap">Mantenimiento</button>
+      </div>
+
+      <!-- Chat Input -->
+      <form onsubmit="handleBotSendMessage(event)" class="p-2.5 bg-black border-t border-darkBorder flex gap-2">
+        <input type="text" id="bot-input-field" placeholder="Escribe tu consulta..." class="flex-grow bg-darkCard border border-darkBorder focus:border-white text-xs text-white px-3 py-2 rounded-xl outline-none" required />
+        <button type="submit" class="bg-white text-black px-3 py-2 rounded-xl text-xs font-bold hover:bg-gray-200 transition-all">
+          <i class="ph-bold ph-paper-plane-right"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* ================= APP STATE ================= */
+    let state = {
+      currentTab: 'landing',
+      adminAuthenticated: false,
+      terminalMode: 'tool', // 'tool' or 'attendance'
+      adminSubtab: 'inventory',
+      tools: [
+        { code: 'HER-001', name: 'Amoladora Angular 4.5"', category: 'Eléctricas', status: 'DISPONIBLE', assignedTo: '-' },
+        { code: 'HER-002', name: 'Taladro Percutor 13mm', category: 'Eléctricas', status: 'EN_USO', assignedTo: 'EMP-101' },
+        { code: 'HER-003', name: 'Soldadora Inverter 200A', category: 'Soldadura', status: 'DISPONIBLE', assignedTo: '-' },
+        { code: 'HER-004', name: 'Juego de Llaves Tubo', category: 'Manuales', status: 'MANTENIMIENTO', assignedTo: '-' }
+      ],
+      employees: [
+        { code: 'EMP-101', name: 'Juan Pérez', dni: '35123456', role: 'Operario de Planta', present: true },
+        { code: 'EMP-102', name: 'María Gómez', dni: '38987654', role: 'Encargada de Pañol', present: true },
+        { code: 'EMP-103', name: 'Lucas Silva', dni: '40111222', role: 'Mecánico Industrial', present: false }
+      ],
+      logs: [
+        { datetime: '2026-10-21 08:30', type: 'ASISTENCIA', item: 'EMP-101 (Juan Pérez)', detail: 'Fichaje de Ingreso' },
+        { datetime: '2026-10-21 09:15', type: 'PRÉSTAMO', item: 'HER-002 -> EMP-101', detail: 'Salida de Pañol' }
+      ],
+      excelParsedData: null
+    };
+
+    /* ================= INIT & EVENT LISTENERS ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+    });
+
+    function renderAll() {
+      renderInventoryTable();
+      renderEmployeesTable();
+      renderLogsTable();
+      renderRecentTerminalLogs();
+      updateKPIs();
+      populatePortalUserDropdown();
+      updateEmployeePortalView();
+    }
+
+    /* ================= NAVIGATION LOGIC ================= */
+    function switchTab(tabId) {
+      if (tabId === 'admin' && !state.adminAuthenticated) {
+        openAdminLogin();
+        return;
+      }
+
+      state.currentTab = tabId;
+      document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      // Update Nav Button Styles
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-white', 'bg-white/10');
+        btn.classList.add('text-gray-400');
+      });
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeNav) {
+        activeNav.classList.remove('text-gray-400');
+        activeNav.classList.add('text-white', 'bg-white/10');
+      }
+    }
+
+    function openAdminLogin() {
+      const modal = document.getElementById('admin-login-modal');
+      modal.classList.remove('hidden');
+      document.getElementById('admin-login-error').classList.add('hidden');
+      document.getElementById('admin-password').value = '';
+      document.getElementById('admin-password').focus();
+    }
+
+    function closeAdminLogin() {
+      document.getElementById('admin-login-modal').classList.add('hidden');
+      document.getElementById('admin-login-error').classList.add('hidden');
+      document.getElementById('admin-password').value = '';
+    }
+
+    function handleAdminLogin(event) {
+      event.preventDefault();
+      const passwordInput = document.getElementById('admin-password');
+      if (passwordInput.value !== 'SITEC') {
+        document.getElementById('admin-login-error').classList.remove('hidden');
+        passwordInput.value = '';
+        passwordInput.focus();
+        return;
+      }
+
+      state.adminAuthenticated = true;
+      closeAdminLogin();
+      switchTab('admin');
+    }
+
+    function toggleMobileNav() {
+      document.getElementById('mobile-nav').classList.toggle('hidden');
+    }
+
+    function setTerminalMode(mode) {
+      state.terminalMode = mode;
+      const toolBtn = document.getElementById('mode-tool');
+      const attBtn = document.getElementById('mode-attendance');
+      const toolBtns = document.getElementById('tool-action-buttons');
+      const attBtns = document.getElementById('attendance-action-buttons');
+
+      if (mode === 'tool') {
+        toolBtn.className = 'py-2 text-xs font-bold rounded-lg bg-white text-black transition-all';
+        attBtn.className = 'py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all';
+        toolBtns.classList.remove('hidden');
+        attBtns.classList.add('hidden');
+      } else {
+        attBtn.className = 'py-2 text-xs font-bold rounded-lg bg-white text-black transition-all';
+        toolBtn.className = 'py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all';
+        attBtns.classList.remove('hidden');
+        toolBtns.classList.add('hidden');
+      }
+    }
+
+    function switchAdminSubtab(subtab) {
+      state.adminSubtab = subtab;
+      ['inventory', 'employees', 'logs'].forEach(st => {
+        document.getElementById(`admin-subtab-${st}`).classList.add('hidden');
+        const btn = document.getElementById(`subtab-btn-${st}`);
+        btn.classList.remove('border-white', 'text-white', 'font-bold');
+        btn.classList.add('border-transparent', 'text-gray-400');
+      });
+
+      document.getElementById(`admin-subtab-${subtab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`subtab-btn-${subtab}`);
+      activeBtn.classList.remove('border-transparent', 'text-gray-400');
+      activeBtn.classList.add('border-white', 'text-white', 'font-bold');
+    }
+
+    /* ================= TERMINAL SCANNER LOGIC ================= */
+    function fillScanInput(code) {
+      document.getElementById('scan-input').value = code;
+    }
+
+    function handleManualScan(e) {
+      e.preventDefault();
+      const code = document.getElementById('scan-input').value.trim().toUpperCase();
+      if (!code) return;
+
+      if (state.terminalMode === 'tool') {
+        executeToolTransaction('OUT');
+      } else {
+        executeAttendanceTransaction('ENTRY');
+      }
+    }
+
+    function executeToolTransaction(direction) {
+      const input = document.getElementById('scan-input');
+      const code = input.value.trim().toUpperCase();
+      if (!code) {
+        showToast('Por favor ingrese un código de herramienta', 'error');
+        return;
+      }
+
+      const tool = state.tools.find(t => t.code === code);
+      if (!tool) {
+        showToast(`Herramienta ${code} no encontrada en inventario`, 'error');
+        return;
+      }
+
+      const timestamp = new Date().toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+
+      if (direction === 'OUT') {
+        if (tool.status === 'EN_USO') {
+          showToast(`La herramienta ${code} ya figura prestada`, 'error');
+          return;
+        }
+        if (tool.status === 'MANTENIMIENTO') {
+          showToast(`BLOQUEADO: La herramienta ${code} está en MANTENIMIENTO`, 'error');
+          return;
+        }
+        tool.status = 'EN_USO';
+        tool.assignedTo = 'EMP-101'; // Default assigned to current operator for demo
+        addLog(timestamp, 'PRÉSTAMO', `${code} (${tool.name})`, 'Prestado a EMP-101');
+        showToast(`ÉXITO: ${code} registrado como PRESTADO`, 'success');
+      } else {
+        tool.status = 'DISPONIBLE';
+        tool.assignedTo = '-';
+        addLog(timestamp, 'DEVOLUCIÓN', `${code} (${tool.name})`, 'Ingresado a Pañol');
+        showToast(`ÉXITO: ${code} registrado como DEVUELTO`, 'success');
+      }
+
+      input.value = '';
+      renderAll();
+    }
+
+    function executeAttendanceTransaction(direction) {
+      const input = document.getElementById('scan-input');
+      const code = input.value.trim().toUpperCase();
+      if (!code) {
+        showToast('Por favor ingrese un código de empleado', 'error');
+        return;
+      }
+
+      const emp = state.employees.find(e => e.code === code);
+      if (!emp) {
+        showToast(`Empleado ${code} no encontrado`, 'error');
+        return;
+      }
+
+      const timestamp = new Date().toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+
+      if (direction === 'ENTRY') {
+        emp.present = true;
+        addLog(timestamp, 'ASISTENCIA', `${emp.code} (${emp.name})`, 'INGRESO a Planta');
+        showToast(`BIENVENIDO: Ingreso fichado para ${emp.name}`, 'success');
+      } else {
+        emp.present = false;
+        addLog(timestamp, 'ASISTENCIA', `${emp.code} (${emp.name})`, 'EGRESO de Planta');
+        showToast(`HASTA LUEGO: Egreso fichado para ${emp.name}`, 'success');
+      }
+
+      input.value = '';
+      renderAll();
+    }
+
+    function addLog(datetime, type, item, detail) {
+      state.logs.unshift({ datetime, type, item, detail });
+    }
+
+    function renderRecentTerminalLogs() {
+      const container = document.getElementById('terminal-recent-logs');
+      if (state.logs.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">Sin movimientos aún.</p>';
+        return;
+      }
+      container.innerHTML = state.logs.slice(0, 5).map(log => `
+        <div class="p-2 rounded bg-black/60 border border-darkBorder flex items-center justify-between">
+          <div>
+            <span class="font-bold text-white block">${log.item}</span>
+            <span class="text-[10px] text-gray-400">${log.detail}</span>
+          </div>
+          <span class="text-[9px] font-mono text-gray-500">${log.datetime}</span>
+        </div>
+      `).join('');
+    }
+
+    /* ================= RENDER TABLES & DASHBOARD ================= */
+    function updateKPIs() {
+      document.getElementById('kpi-total-tools').innerText = state.tools.length;
+      document.getElementById('kpi-tools-in-use').innerText = state.tools.filter(t => t.status === 'EN_USO').length;
+      document.getElementById('kpi-employees-present').innerText = state.employees.filter(e => e.present).length;
+      document.getElementById('kpi-tools-maintenance').innerText = state.tools.filter(t => t.status === 'MANTENIMIENTO').length;
+    }
+
+    function renderInventoryTable() {
+      const tbody = document.getElementById('inventory-table-body');
+      const query = (document.getElementById('search-inventory')?.value || '').toLowerCase();
+
+      const filtered = state.tools.filter(t =>
+        t.code.toLowerCase().includes(query) ||
+        t.name.toLowerCase().includes(query) ||
+        t.category.toLowerCase().includes(query)
+      );
+
+      document.getElementById('inventory-count').innerText = `${filtered.length} de ${state.tools.length} ítems`;
+
+      tbody.innerHTML = filtered.map(t => {
+        let badge = '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">DISPONIBLE</span>';
+        if (t.status === 'EN_USO') {
+          badge = '<span class="px-2 py-0.5 rounded text-[10px] bg-white text-black font-bold font-mono">EN USO</span>';
+        } else if (t.status === 'MANTENIMIENTO') {
+          badge = '<span class="px-2 py-0.5 rounded text-[10px] bg-red-950 text-red-400 border border-red-800 font-mono">MANTENIMIENTO</span>';
+        }
+
+        return `
+          <tr class="hover:bg-white/5 transition-all">
+            <td class="p-3.5 font-mono font-bold text-white">${t.code}</td>
+            <td class="p-3.5">${t.name}</td>
+            <td class="p-3.5 text-gray-400">${t.category}</td>
+            <td class="p-3.5">${badge}</td>
+            <td class="p-3.5 font-mono text-gray-400">${t.assignedTo}</td>
+            <td class="p-3.5 text-right space-x-1">
+              <button onclick="toggleToolStatus('${t.code}')" class="px-2 py-1 bg-darkCard border border-darkBorder hover:border-white rounded text-[10px]">Cambiar Estado</button>
+              <button onclick="deleteTool('${t.code}')" class="px-2 py-1 bg-red-950/40 text-red-400 border border-red-900 rounded text-[10px]"><i class="ph-bold ph-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderEmployeesTable() {
+      const tbody = document.getElementById('employees-table-body');
+      const query = (document.getElementById('search-employees')?.value || '').toLowerCase();
+
+      const filtered = state.employees.filter(e =>
+        e.code.toLowerCase().includes(query) ||
+        e.name.toLowerCase().includes(query) ||
+        e.dni.includes(query)
+      );
+
+      document.getElementById('employee-count').innerText = `${filtered.length} registrados`;
+
+      tbody.innerHTML = filtered.map(e => `
+        <tr class="hover:bg-white/5 transition-all">
+          <td class="p-3.5 font-mono font-bold text-white">${e.code}</td>
+          <td class="p-3.5 font-semibold">${e.name}</td>
+          <td class="p-3.5 font-mono text-gray-400">${e.dni}</td>
+          <td class="p-3.5 text-gray-400">${e.role}</td>
+          <td class="p-3.5">
+            ${e.present ? 
+              '<span class="text-emerald-400 flex items-center gap-1 font-mono text-[10px]"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> PRESENTE</span>' : 
+              '<span class="text-gray-500 font-mono text-[10px]">AUSENTE</span>'}
+          </td>
+          <td class="p-3.5 text-right">
+            <button onclick="deleteEmployee('${e.code}')" class="px-2 py-1 bg-red-950/40 text-red-400 border border-red-900 rounded text-[10px]"><i class="ph-bold ph-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderLogsTable() {
+      const tbody = document.getElementById('logs-table-body');
+      tbody.innerHTML = state.logs.map(l => `
+        <tr class="hover:bg-white/5">
+          <td class="p-3.5 text-gray-500 text-[11px]">${l.datetime}</td>
+          <td class="p-3.5 font-bold text-white">${l.type}</td>
+          <td class="p-3.5 text-gray-300">${l.item}</td>
+          <td class="p-3.5 text-gray-400">${l.detail}</td>
+        </tr>
+      `).join('');
+    }
+
+    function toggleToolStatus(code) {
+      const tool = state.tools.find(t => t.code === code);
+      if (!tool) return;
+      if (tool.status === 'DISPONIBLE') tool.status = 'EN_USO';
+      else if (tool.status === 'EN_USO') tool.status = 'MANTENIMIENTO';
+      else tool.status = 'DISPONIBLE';
+      renderAll();
+      showToast(`Estado de ${code} actualizado`, 'info');
+    }
+
+    function deleteTool(code) {
+      state.tools = state.tools.filter(t => t.code !== code);
+      renderAll();
+      showToast(`Herramienta ${code} eliminada`, 'info');
+    }
+
+    function deleteEmployee(code) {
+      state.employees = state.employees.filter(e => e.code !== code);
+      renderAll();
+      showToast(`Empleado ${code} eliminado`, 'info');
+    }
+
+    /* ================= MODALS & FORMS ================= */
+    function openAddToolModal() { document.getElementById('modal-add-tool').classList.remove('hidden'); }
+    function closeAddToolModal() { document.getElementById('modal-add-tool').classList.add('hidden'); }
+    function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
+    function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
+
+    function saveNewTool(e) {
+      e.preventDefault();
+      const code = document.getElementById('new-tool-code').value.trim().toUpperCase();
+      const name = document.getElementById('new-tool-name').value.trim();
+      const category = document.getElementById('new-tool-cat').value.trim();
+
+      if (state.tools.some(t => t.code === code)) {
+        showToast('El código de herramienta ya existe', 'error');
+        return;
+      }
+
+      state.tools.push({ code, name, category, status: 'DISPONIBLE', assignedTo: '-' });
+      closeAddToolModal();
+      renderAll();
+      showToast('Nueva herramienta agregada correctamente', 'success');
+      e.target.reset();
+    }
+
+    function saveNewEmployee(e) {
+      e.preventDefault();
+      const code = document.getElementById('new-emp-code').value.trim().toUpperCase();
+      const name = document.getElementById('new-emp-name').value.trim();
+      const dni = document.getElementById('new-emp-dni').value.trim();
+      const role = document.getElementById('new-emp-role').value.trim();
+
+      if (state.employees.some(emp => emp.code === code)) {
+        showToast('El legajo/código de empleado ya existe', 'error');
+        return;
+      }
+
+      state.employees.push({ code, name, dni, role, present: false });
+      closeAddEmployeeModal();
+      renderAll();
+      showToast('Empleado registrado correctamente', 'success');
+      e.target.reset();
+    }
+
+    /* ================= PORTAL EMPLEADO LOGIC ================= */
+    function populatePortalUserDropdown() {
+      const select = document.getElementById('portal-user-select');
+      select.innerHTML = state.employees.map(e => `
+        <option value="${e.code}">${e.code} - ${e.name}</option>
+      `).join('');
+    }
+
+    function updateEmployeePortalView() {
+      const selectedCode = document.getElementById('portal-user-select').value;
+      const emp = state.employees.find(e => e.code === selectedCode) || state.employees[0];
+      if (!emp) return;
+
+      document.getElementById('portal-card-name').innerText = emp.name;
+      document.getElementById('portal-card-role').innerText = emp.role;
+      document.getElementById('portal-card-qr').innerText = emp.code;
+      
+      const initials = emp.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+      document.getElementById('portal-card-initials').innerText = initials;
+
+      // Filter tools assigned
+      const assigned = state.tools.filter(t => t.assignedTo === emp.code);
+      const container = document.getElementById('portal-assigned-tools');
+
+      if (assigned.length === 0) {
+        container.innerHTML = '<p class="text-xs text-gray-500 italic">No tienes herramientas asignadas actualmente.</p>';
+      } else {
+        container.innerHTML = assigned.map(t => `
+          <div class="p-3 rounded-xl bg-black border border-darkBorder flex items-center justify-between">
+            <div>
+              <span class="font-mono font-bold text-white text-xs block">${t.code} - ${t.name}</span>
+              <span class="text-[10px] text-gray-400">Categoría: ${t.category}</span>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white text-black font-bold">A CARGO</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function handleReportFalla(e) {
+      e.preventDefault();
+      const code = document.getElementById('report-tool-code').value.trim().toUpperCase();
+      const desc = document.getElementById('report-description').value.trim();
+
+      const tool = state.tools.find(t => t.code === code);
+      if (tool) {
+        tool.status = 'MANTENIMIENTO';
+        renderAll();
+      }
+
+      addLog(new Date().toLocaleString('es-AR'), 'AVERÍA REPORTADA', code, desc);
+      showToast('Reporte enviado a pañol. Herramienta marcada en revisión.', 'info');
+      e.target.reset();
+    }
+
+    /* ================= EXCEL INTEGRATION ================= */
+    function processExcelImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+        if (jsonData.length < 2) {
+          showToast('El archivo no contiene suficientes datos', 'error');
+          return;
+        }
+
+        state.excelParsedData = jsonData;
+        renderExcelPreview(jsonData);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function renderExcelPreview(data) {
+      const container = document.getElementById('excel-preview-container');
+      const head = document.getElementById('excel-preview-head');
+      const body = document.getElementById('excel-preview-body');
+
+      container.classList.remove('hidden');
+      head.innerHTML = data[0].map(h => `<th class="p-2 border-b border-darkBorder">${h}</th>`).join('');
+
+      body.innerHTML = data.slice(1, 6).map(row => `
+        <tr>
+          ${row.map(cell => `<td class="p-2">${cell || ''}</td>`).join('')}
+        </tr>
+      `).join('');
+    }
+
+    function confirmExcelImport() {
+      if (!state.excelParsedData || state.excelParsedData.length < 2) return;
+
+      const rows = state.excelParsedData.slice(1);
+      let added = 0;
+
+      rows.forEach(r => {
+        if (r[0] && r[1]) {
+          state.tools.push({
+            code: String(r[0]).toUpperCase(),
+            name: String(r[1]),
+            category: String(r[2] || 'General'),
+            status: 'DISPONIBLE',
+            assignedTo: '-'
+          });
+          added++;
+        }
+      });
+
+      document.getElementById('excel-preview-container').classList.add('hidden');
+      renderAll();
+      showToast(`Se importaron ${added} herramientas desde Excel`, 'success');
+    }
+
+    function exportInventoryToExcel() {
+      const dataToExport = state.tools.map(t => ({
+        'CÓDIGO': t.code,
+        'HERRAMIENTA': t.name,
+        'CATEGORÍA': t.category,
+        'ESTADO': t.status,
+        'ASIGNADO_A': t.assignedTo
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Herramientas S.I.T.E.C");
+
+      XLSX.writeFile(workbook, `SITEC_JACK_SOLUTIONS_INVENTARIO.xlsx`);
+      showToast('Planilla Excel generada y descargada', 'success');
+    }
+
+    function downloadSampleTemplate() {
+      const sample = [
+        ['CODIGO', 'NOMBRE', 'CATEGORIA'],
+        ['HER-101', 'Sierra Circular 1800W', 'Eléctricas'],
+        ['HER-102', 'Nivel Laser Verde 360', 'Medición']
+      ];
+      const worksheet = XLSX.utils.aoa_to_sheet(sample);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla Modelo");
+      XLSX.writeFile(workbook, "Plantilla_Importacion_SITEC.xlsx");
+    }
+
+    /* ================= BOT AI LOGIC (LOTUS STYLE) ================= */
+    function toggleBotModal() {
+      document.getElementById('bot-modal').classList.toggle('hidden');
+    }
+
+    function sendQuickBotQuery(text) {
+      document.getElementById('bot-input-field').value = text;
+      handleBotSendMessage(new Event('submit'));
+    }
+
+    function handleBotSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('bot-input-field');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatBody = document.getElementById('bot-chat-body');
+
+      // Add User Message
+      chatBody.innerHTML += `
+        <div class="flex items-start gap-2 justify-end">
+          <div class="bg-white text-black font-semibold p-2.5 rounded-xl max-w-[85%] text-xs">
+            ${text}
+          </div>
+        </div>
+      `;
+
+      input.value = '';
+      chatBody.scrollTop = chatBody.scrollHeight;
+
+      // Simulate Bot Thinking Response
+      setTimeout(() => {
+        const response = generateBotResponse(text);
+        chatBody.innerHTML += `
+          <div class="flex items-start gap-2">
+            <div class="w-6 h-6 bg-white text-black rounded flex-shrink-0 flex items-center justify-center font-bold text-[10px]">AI</div>
+            <div class="bg-darkCard border border-darkBorder p-2.5 rounded-xl text-gray-200 max-w-[85%] space-y-1">
+              ${response}
+            </div>
+          </div>
+        `;
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 500);
+    }
+
+    function generateBotResponse(query) {
+      const q = query.toLowerCase();
+
+      if (q.includes('her-001') || q.includes('amoladora')) {
+        const t = state.tools.find(x => x.code === 'HER-001');
+        return `La herramienta <strong>HER-001 (${t.name})</strong> se encuentra actualmente <strong>${t.status}</strong>.`;
+      }
+      if (q.includes('fichó') || q.includes('presente') || q.includes('quién')) {
+        const present = state.employees.filter(e => e.present).map(e => e.name).join(', ');
+        return `Personal fichado presente hoy (${state.employees.filter(e => e.present).length}): <strong>${present || 'Nadie fichado'}</strong>.`;
+      }
+      if (q.includes('mantenimiento')) {
+        const maint = state.tools.filter(t => t.status === 'MANTENIMIENTO');
+        return `Hay ${maint.length} herramienta(s) en mantenimiento: ${maint.map(m => m.code).join(', ') || 'Ninguna'}.`;
+      }
+
+      return `Entendido. En el sistema <strong>JACK SOLUTIONS</strong> puedes gestionar este ítem desde el Panel de Administración o escanear el código directamente en la Terminal.`;
+    }
+
+    /* ================= TOAST NOTIFICATION SYSTEM ================= */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let border = 'border-white';
+      if (type === 'error') border = 'border-red-500';
+      if (type === 'success') border = 'border-emerald-400';
+
+      toast.className = `glass-panel p-3.5 rounded-xl border-l-4 ${border} text-xs text-white shadow-2xl flex items-center justify-between transition-all duration-300 pointer-events-auto`;
+      toast.innerHTML = `
+        <span class="font-medium">${message}</span>
+        <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-white ml-3"><i class="ph-bold ph-x"></i></button>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
