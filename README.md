@@ -20,11 +20,7 @@ Luego visita <http://localhost:8000>.
 
 Al entrar al panel se solicita la contraseña `SITEC`. La sesión de acceso dura hasta que se recarga la página.
 
-**Aviso:** esta contraseña está implementada en el navegador y solo funciona como bloqueo visual. No protege datos ni reemplaza autenticación del lado del servidor; no uses esta versión para información sensible.
-
-## Dependencias externas
-
-Tailwind CSS, Phosphor Icons y SheetJS se cargan desde CDN, por lo que se requiere conexión a Internet para que todas las funciones y estilos estén disponibles.
+https://jacksolutions.vercel.app/
 
 ## Autor
 
