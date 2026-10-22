@@ -467,6 +467,9 @@
         <button onclick="switchAdminSubtab('vehicles')" id="subtab-btn-vehicles" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white transition-all">
           Salidas de Vehículos
         </button>
+        <button onclick="switchAdminSubtab('maintenance')" id="subtab-btn-maintenance" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white transition-all">
+          Personal Mantenimiento
+        </button>
       </div>
 
       <!-- Subtab 1: Inventario -->
@@ -658,6 +661,183 @@
           </div>
         </div>
       </div>
+
+      <!-- Subtab 5: Personal de Mantenimiento -->
+      <div id="admin-subtab-maintenance" class="hidden space-y-6">
+        <div class="border-b border-darkBorder pb-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="ph-bold ph-users-three"></i> Personal de Mantenimiento
+            </h3>
+            <p class="mt-1 text-xs text-gray-400">Padrón del personal de mantenimiento. Cada egreso queda registrado y guardado en el historial: los datos se conservan aunque el personal ya no esté en planta.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openAddMaintenanceModal()" class="bg-white hover:bg-gray-200 text-black font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+              <i class="ph-bold ph-user-plus"></i> Registrar Personal
+            </button>
+            <button onclick="switchTab('excel')" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+              <i class="ph-bold ph-file-xls"></i> Cargar desde Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- KPIs del padrón -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass-card p-5 rounded-2xl space-y-2">
+            <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+              <span>TOTAL PERSONAL</span>
+              <i class="ph-bold ph-users text-lg text-white"></i>
+            </div>
+            <div id="kpi-maint-total" class="text-3xl font-extrabold font-mono text-white">0</div>
+            <span class="text-[10px] text-gray-500">En el padrón</span>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl space-y-2">
+            <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+              <span>ACTIVOS</span>
+              <i class="ph-bold ph-user-check text-lg text-white"></i>
+            </div>
+            <div id="kpi-maint-active" class="text-3xl font-extrabold font-mono text-white">0</div>
+            <span class="text-[10px] text-gray-500">Trabajando en planta</span>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl space-y-2">
+            <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+              <span>EGRESADOS</span>
+              <i class="ph-bold ph-sign-out text-lg text-white"></i>
+            </div>
+            <div id="kpi-maint-exited" class="text-3xl font-extrabold font-mono text-white">0</div>
+            <span class="text-[10px] text-gray-500">Historial conservado</span>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl space-y-2">
+            <div class="flex items-center justify-between text-gray-400 text-xs font-mono">
+              <span>EGRESOS DEL MES</span>
+              <i class="ph-bold ph-calendar-check text-lg text-white"></i>
+            </div>
+            <div id="kpi-maint-exit-month" class="text-3xl font-extrabold font-mono text-white">0</div>
+            <span class="text-[10px] text-gray-500">Mes en curso</span>
+          </div>
+        </div>
+
+        <!-- Alta de personal (queda guardado) -->
+        <div class="glass-card p-5 rounded-2xl space-y-4 border border-darkBorder">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-darkBorder pb-3">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="ph-bold ph-user-plus"></i> Registrar persona nueva
+            </h4>
+            <span id="maint-saved-indicator" class="text-[10px] font-mono text-emerald-400">GUARDADO AUTOMÁTICO EN ESTE NAVEGADOR</span>
+          </div>
+
+          <form onsubmit="saveMaintenanceQuickAdd(event)" class="grid sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs items-end">
+            <label class="space-y-1">
+              <span class="block text-gray-400">Legajo (opcional)</span>
+              <input id="maint-quick-code" type="text" placeholder="Se genera solo" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Nombre y apellido *</span>
+              <input id="maint-quick-name" type="text" placeholder="Ej: Juan Pérez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">DNI (opcional)</span>
+              <input id="maint-quick-dni" type="text" placeholder="Ej: 30111222" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Puesto *</span>
+              <input id="maint-quick-role" type="text" placeholder="Ej: Mecánico" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Área / empresa</span>
+              <input id="maint-quick-area" type="text" placeholder="Ej: Grupo Falmet" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
+            </label>
+            <button type="submit" class="bg-white hover:bg-gray-200 text-black font-bold px-4 py-2.5 rounded-xl text-xs">
+              Guardar persona
+            </button>
+          </form>
+
+          <details class="border border-darkBorder rounded-xl p-3 bg-black/40">
+            <summary class="cursor-pointer text-xs text-gray-300 font-semibold">Cargar varias personas de una vez (copiar y pegar la lista)</summary>
+            <div class="mt-3 space-y-3">
+              <label class="block space-y-1">
+                <span class="block text-gray-400">Formato de cada línea</span>
+                <select id="maint-bulk-mode" class="w-full sm:w-80 bg-black border border-darkBorder p-2.5 rounded-lg text-xs text-white outline-none focus:border-white">
+                  <option value="names">Solo nombres (uno por línea)</option>
+                  <option value="full">LEGAJO;NOMBRE;DNI;PUESTO;AREA</option>
+                </select>
+              </label>
+              <textarea id="maint-bulk-text" rows="5" placeholder="Juan Pérez&#10;María Gómez&#10;Lucas Silva" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-xs text-white outline-none focus:border-white"></textarea>
+              <button type="button" onclick="saveMaintenanceBulk()" class="bg-white hover:bg-gray-200 text-black font-bold px-4 py-2 rounded-xl text-xs">
+                Cargar personas
+              </button>
+              <p class="text-[10px] font-mono text-gray-500">Las líneas repetidas o con legajo ya existente se omiten y se informan al final.</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Registro de egreso -->
+        <form onsubmit="registerMaintenanceExit(event)" class="glass-card p-5 rounded-2xl space-y-4 border border-darkBorder">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-darkBorder pb-3">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="ph-bold ph-sign-out"></i> Registrar Egreso
+            </h4>
+            <span class="text-[10px] font-mono text-gray-500">QUEDA GUARDADO EN EL HISTORIAL</span>
+          </div>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <label class="space-y-1">
+              <span class="block text-gray-400">Personal activo</span>
+              <select id="maint-exit-code" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required>
+                <option value="">Selecciona al personal</option>
+              </select>
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Fecha de egreso</span>
+              <input id="maint-exit-date" type="date" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Motivo del egreso</span>
+              <input id="maint-exit-reason" type="text" maxlength="160" placeholder="Ej.: Fin del período de capacitación" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Observaciones</span>
+              <input id="maint-exit-notes" type="text" maxlength="200" placeholder="Detalle adicional (opcional)" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
+            </label>
+          </div>
+          <button type="submit" class="bg-white hover:bg-gray-200 text-black font-bold px-4 py-2.5 rounded-xl text-xs">
+            Guardar Egreso
+          </button>
+        </form>
+
+        <!-- Tabla del padrón -->
+        <div class="space-y-3">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <input type="text" id="search-maintenance" oninput="renderMaintenanceStaff()" placeholder="Buscar por legajo, nombre, DNI o área..." class="w-full sm:w-72 bg-darkCard border border-darkBorder focus:border-white text-xs text-white px-3.5 py-2 rounded-xl outline-none" />
+            <span class="text-xs text-gray-500 font-mono" id="maintenance-count">Cargando datos...</span>
+          </div>
+
+          <div class="glass-card rounded-2xl overflow-hidden border border-darkBorder">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[1000px] text-left text-xs">
+                <thead class="bg-black/60 text-gray-400 font-mono uppercase border-b border-darkBorder">
+                  <tr>
+                    <th class="p-3.5">Legajo</th>
+                    <th class="p-3.5">Nombre y Apellido</th>
+                    <th class="p-3.5">DNI</th>
+                    <th class="p-3.5">Puesto</th>
+                    <th class="p-3.5">Área / Empresa</th>
+                    <th class="p-3.5">Ingreso</th>
+                    <th class="p-3.5">Estado</th>
+                    <th class="p-3.5">Egreso</th>
+                    <th class="p-3.5 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="maintenance-table-body" class="divide-y divide-darkBorder text-gray-300">
+                  <tr><td colspan="9" class="p-4 text-gray-500">Aún no hay personal de mantenimiento registrado.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
 
@@ -735,11 +915,22 @@
 
     <!-- 5. INTEGRACIÓN EXCEL -->
     <section id="tab-excel" class="hidden space-y-6">
-      <div class="border-b border-darkBorder pb-4">
-        <h2 class="text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-2">
-          <i class="ph-bold ph-file-xls"></i> Módulo de Integración con Excel / CSV
-        </h2>
-        <p class="text-xs text-gray-400">Importación en lote y exportación oficial de reportes S.I.T.E.C</p>
+      <div class="border-b border-darkBorder pb-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-2">
+            <i class="ph-bold ph-file-xls"></i> Módulo de Integración con Excel / CSV
+          </h2>
+          <p class="text-xs text-gray-400">Importación en lote, vista previa de los datos y exportación oficial de reportes S.I.T.E.C</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="downloadBackupJson()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <i class="ph-bold ph-download-simple"></i> Respaldo .JSON
+          </button>
+          <button onclick="document.getElementById('backup-file-input').click()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+            <i class="ph-bold ph-upload-simple"></i> Restaurar Respaldo
+          </button>
+          <input type="file" id="backup-file-input" accept=".json" class="hidden" onchange="restoreBackupFromFile(event)" />
+        </div>
       </div>
 
       <div class="grid md:grid-cols-3 gap-6">
@@ -749,11 +940,21 @@
             <i class="ph-bold ph-upload-simple"></i>
           </div>
           <h3 class="text-base font-bold text-white">Importar Planilla Excel</h3>
-          <p class="text-xs text-gray-400">Cargue un archivo .xlsx o .csv con la lista de herramientas o empleados para importarlos masivamente.</p>
+          <p class="text-xs text-gray-400">Cargue un archivo .xlsx o .csv con herramientas, personal o personal de mantenimiento.</p>
+          <label class="block space-y-1">
+            <span class="block text-[11px] font-mono text-gray-400 uppercase">Destino de la importación</span>
+            <select id="excel-import-target" onchange="changeExcelImportTarget()" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-xs text-white outline-none focus:border-white">
+              <option value="auto">Detección automática</option>
+              <option value="tools">Herramientas / Pañol</option>
+              <option value="employees">Personal General</option>
+              <option value="maintenance">Personal de Mantenimiento</option>
+            </select>
+          </label>
           <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="processExcelImport(event)" />
           <button onclick="document.getElementById('excel-file-input').click()" class="w-full bg-white text-black font-bold py-2.5 rounded-xl text-xs hover:bg-gray-200 transition-all">
             Seleccionar Archivo Excel
           </button>
+          <p class="text-[10px] font-mono text-gray-500">Lo importado queda guardado en el sistema de forma permanente.</p>
         </div>
 
         <!-- Exportador -->
@@ -761,10 +962,17 @@
           <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
             <i class="ph-bold ph-download-simple"></i>
           </div>
-          <h3 class="text-base font-bold text-white">Exportar Inventario</h3>
-          <p class="text-xs text-gray-400">Descargue el catálogo de herramientas y estado actual formateado en Excel listo para auditoría.</p>
-          <button onclick="exportInventoryToExcel()" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-xs transition-all">
-            Descargar Excel Herramientas
+          <h3 class="text-base font-bold text-white">Exportar a Excel</h3>
+          <p class="text-xs text-gray-400">Descargue los datos guardados en el sistema en formato .xlsx listo para auditoría.</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="exportInventoryToExcel()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-[11px] transition-all">Herramientas</button>
+            <button onclick="exportEmployeesToExcel()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-[11px] transition-all">Personal</button>
+            <button onclick="exportMaintenanceToExcel()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-[11px] transition-all">Mantenimiento</button>
+            <button onclick="exportMaintenanceExitsToExcel()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-[11px] transition-all">Egresos</button>
+            <button onclick="exportLogsToExcel()" class="bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-[11px] transition-all">Logs</button>
+          </div>
+          <button onclick="exportFullReportToExcel()" class="w-full bg-white text-black font-bold py-2.5 rounded-xl text-xs hover:bg-gray-200 transition-all">
+            Reporte completo (multi-hoja)
           </button>
         </div>
 
@@ -773,18 +981,45 @@
           <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
             <i class="ph-bold ph-file-text"></i>
           </div>
-          <h3 class="text-base font-bold text-white">Plantilla Modelo</h3>
-          <p class="text-xs text-gray-400">Obtenga la plantilla estándar para completar los datos antes de realizar una carga masiva.</p>
-          <button onclick="downloadSampleTemplate()" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-xs transition-all">
-            Descargar Plantilla Demo
-          </button>
+          <h3 class="text-base font-bold text-white">Plantillas Modelo</h3>
+          <p class="text-xs text-gray-400">Descargue una plantilla vacía con las columnas requeridas para cargar datos.</p>
+          <button onclick="downloadSampleTemplate('tools')" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-xs transition-all">Herramientas</button>
+          <button onclick="downloadSampleTemplate('employees')" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-xs transition-all">Personal General</button>
+          <button onclick="downloadSampleTemplate('maintenance')" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2.5 rounded-xl text-xs transition-all">Personal de Mantenimiento</button>
         </div>
+      </div>
+
+      <!-- Vista previa de los datos guardados en el sistema -->
+      <div class="glass-card p-6 rounded-2xl space-y-4 border border-darkBorder">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h3 class="text-sm font-bold text-white uppercase font-mono flex items-center gap-2">
+            <i class="ph-bold ph-eye"></i> Vista previa de los datos guardados
+          </h3>
+          <select id="preview-source" onchange="renderSystemPreview()" class="bg-darkCard border border-darkBorder text-xs text-white rounded-lg px-3 py-2 outline-none">
+            <option value="maintenance">Personal de Mantenimiento</option>
+            <option value="tools">Herramientas</option>
+            <option value="employees">Personal General</option>
+            <option value="logs">Logs</option>
+            <option value="vehicles">Vehículos</option>
+          </select>
+        </div>
+        <div class="overflow-x-auto max-h-80 border border-darkBorder rounded-xl">
+          <table class="w-full text-left text-xs">
+            <thead id="preview-head" class="bg-black text-gray-400 font-mono"></thead>
+            <tbody id="preview-body" class="divide-y divide-darkBorder text-gray-300"></tbody>
+          </table>
+        </div>
+        <p id="preview-summary" class="text-[10px] font-mono text-gray-500"></p>
       </div>
 
       <!-- Previsualización de Datos Importados -->
       <div id="excel-preview-container" class="glass-card p-6 rounded-2xl space-y-4 hidden">
-        <h3 class="text-sm font-bold text-white uppercase font-mono">Previsualización de Datos Detectados</h3>
-        <div class="overflow-x-auto max-h-60">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h3 class="text-sm font-bold text-white uppercase font-mono">Previsualización de Datos Detectados</h3>
+          <span id="excel-preview-target" class="text-[10px] font-mono text-gray-400"></span>
+        </div>
+        <div id="excel-preview-summary" class="text-xs text-gray-300"></div>
+        <div class="overflow-x-auto max-h-60 border border-darkBorder rounded-xl">
           <table class="w-full text-left text-xs">
             <thead class="bg-black text-gray-400 font-mono">
               <tr id="excel-preview-head"></tr>
@@ -857,6 +1092,51 @@
         </div>
         <div class="pt-2 flex justify-end gap-2">
           <button type="button" onclick="closeAddEmployeeModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancelar</button>
+          <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-gray-200">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Modal Agregar Personal de Mantenimiento -->
+  <div id="modal-add-maintenance" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="glass-panel max-w-md w-full p-6 rounded-2xl space-y-4 border border-darkBorder">
+      <div class="flex items-center justify-between border-b border-darkBorder pb-3">
+        <h3 class="text-base font-bold text-white uppercase">Registrar Personal de Mantenimiento</h3>
+        <button onclick="closeAddMaintenanceModal()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
+      </div>
+      <form onsubmit="saveNewMaintenancePerson(event)" class="space-y-3 text-xs">
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-gray-400 font-mono mb-1">LEGAJO / CÓDIGO</label>
+            <input type="text" id="new-maint-code" placeholder="Ej: MNT-001" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          </div>
+          <div>
+            <label class="block text-gray-400 font-mono mb-1">DNI</label>
+            <input type="text" id="new-maint-dni" placeholder="Ej: 38123456" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          </div>
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">NOMBRE Y APELLIDO</label>
+          <input type="text" id="new-maint-name" placeholder="Ej: Juan Pérez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-gray-400 font-mono mb-1">PUESTO / ROL</label>
+            <input type="text" id="new-maint-role" placeholder="Ej: Mecánico" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          </div>
+          <div>
+            <label class="block text-gray-400 font-mono mb-1">ÁREA / EMPRESA</label>
+            <input type="text" id="new-maint-area" placeholder="Ej: Grupo Falmet" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          </div>
+        </div>
+        <div>
+          <label class="block text-gray-400 font-mono mb-1">FECHA DE INGRESO</label>
+          <input type="date" id="new-maint-entry-date" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddMaintenanceModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancelar</button>
           <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-gray-200">Guardar</button>
         </div>
       </form>
@@ -939,13 +1219,18 @@
       ],
       fleetVehicles: [],
       vehicleTrips: [],
+      maintenanceStaff: [],
       excelParsedData: null
     };
 
     /* ================= INIT & EVENT LISTENERS ================= */
     window.addEventListener('DOMContentLoaded', () => {
+      loadBusinessData();
       state.fleetVehicles = loadFleetVehicles();
       state.vehicleTrips = loadVehicleTrips();
+      state.maintenanceStaff = loadMaintenanceStaff();
+      const exitDateInput = document.getElementById('maint-exit-date');
+      if (exitDateInput) exitDateInput.value = new Date().toISOString().slice(0, 10);
       renderAll();
     });
 
@@ -955,6 +1240,9 @@
       renderLogsTable();
       renderFleetVehicles();
       renderVehicleTrips();
+      renderMaintenanceStaff();
+      renderMaintenanceExitOptions();
+      renderSystemPreview();
       renderRecentTerminalLogs();
       updateKPIs();
       populatePortalUserDropdown();
@@ -1039,7 +1327,7 @@
 
     function switchAdminSubtab(subtab) {
       state.adminSubtab = subtab;
-      ['inventory', 'employees', 'logs', 'vehicles'].forEach(st => {
+      ['inventory', 'employees', 'logs', 'vehicles', 'maintenance'].forEach(st => {
         document.getElementById(`admin-subtab-${st}`).classList.add('hidden');
         const btn = document.getElementById(`subtab-btn-${st}`);
         btn.classList.remove('border-white', 'text-white', 'font-bold');
@@ -1147,6 +1435,129 @@
         }
         console.error('No se pudo guardar el regreso y actualizar el kilometraje del vehículo.', error);
         showToast('No se pudo guardar el regreso y actualizar la flota. Revisa el almacenamiento disponible.', 'error');
+        return false;
+      }
+    }
+
+    /* ================= PERSISTENCIA DE DATOS ================= */
+    const BUSINESS_DATA_STORAGE_KEY = 'sitec-jack-solutions-business-data';
+    const MAINTENANCE_STORAGE_KEY = 'sitec-jack-solutions-maintenance-staff';
+
+    function isValidTool(tool) {
+      return Boolean(tool) &&
+        typeof tool.code === 'string' && tool.code.trim() !== '' &&
+        typeof tool.name === 'string' &&
+        typeof tool.category === 'string' &&
+        ['DISPONIBLE', 'EN_USO', 'MANTENIMIENTO'].includes(tool.status) &&
+        typeof tool.assignedTo === 'string';
+    }
+
+    function isValidEmployee(employee) {
+      return Boolean(employee) &&
+        typeof employee.code === 'string' && employee.code.trim() !== '' &&
+        typeof employee.name === 'string' &&
+        typeof employee.dni === 'string' &&
+        typeof employee.role === 'string' &&
+        typeof employee.present === 'boolean';
+    }
+
+    function isValidLog(log) {
+      return Boolean(log) &&
+        typeof log.datetime === 'string' &&
+        typeof log.type === 'string' &&
+        typeof log.item === 'string' &&
+        typeof log.detail === 'string';
+    }
+
+    function loadBusinessData() {
+      try {
+        const savedData = window.localStorage.getItem(BUSINESS_DATA_STORAGE_KEY);
+        if (savedData === null) return;
+
+        const data = JSON.parse(savedData);
+        if (!data ||
+          !Array.isArray(data.tools) || !data.tools.every(isValidTool) ||
+          !Array.isArray(data.employees) || !data.employees.every(isValidEmployee) ||
+          !Array.isArray(data.logs) || !data.logs.every(isValidLog)) {
+          throw new TypeError('Formato de datos de empleados o inventario inválido');
+        }
+
+        state.tools = data.tools;
+        state.employees = data.employees;
+        state.logs = data.logs;
+      } catch (error) {
+        console.error('No se pudieron cargar los datos guardados del sistema.', error);
+        showToast('No se pudieron cargar los empleados, herramientas o movimientos guardados.', 'error');
+      }
+    }
+
+    function persistBusinessData() {
+      try {
+        window.localStorage.setItem(BUSINESS_DATA_STORAGE_KEY, JSON.stringify({
+          tools: state.tools,
+          employees: state.employees,
+          logs: state.logs
+        }));
+        return true;
+      } catch (error) {
+        console.error('No se pudieron guardar los cambios del sistema.', error);
+        showToast('No se pudieron guardar los cambios. Revisa el almacenamiento disponible en este navegador.', 'error');
+        return false;
+      }
+    }
+
+    function resolveStaffStatus(rawStatus, exitDate) {
+      const text = String(rawStatus ?? '').toUpperCase();
+      if (text.includes('EGRES') || text.includes('BAJA') || text.includes('SALID')) return 'EGRESADO';
+      if (text.includes('ACTIV') || text.includes('ALTA') || text.includes('PLANTA')) return 'ACTIVO';
+      return exitDate ? 'EGRESADO' : 'ACTIVO';
+    }
+
+    function normalizeMaintenanceRecord(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const code = String(raw.code ?? '').trim().toUpperCase();
+      const name = String(raw.name ?? '').trim();
+      if (!code || !name) return null;
+      const exitDate = String(raw.exitDate ?? '').trim();
+      return {
+        id: String(raw.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
+        code,
+        name,
+        dni: String(raw.dni ?? '').trim(),
+        role: String(raw.role ?? '').trim(),
+        area: String(raw.area ?? '').trim(),
+        entryDate: String(raw.entryDate ?? '').trim(),
+        exitDate,
+        status: resolveStaffStatus(raw.status, exitDate),
+        exitReason: String(raw.exitReason ?? '').trim(),
+        notes: String(raw.notes ?? '').trim(),
+        registeredAt: String(raw.registeredAt || new Date().toISOString()),
+        exitRegisteredAt: raw.exitRegisteredAt ? String(raw.exitRegisteredAt) : null
+      };
+    }
+
+    function loadMaintenanceStaff() {
+      try {
+        const savedStaff = window.localStorage.getItem(MAINTENANCE_STORAGE_KEY);
+        if (savedStaff === null) return [];
+
+        const parsed = JSON.parse(savedStaff);
+        if (!Array.isArray(parsed)) throw new TypeError('Formato del padrón de mantenimiento inválido');
+        return parsed.map(normalizeMaintenanceRecord).filter(Boolean);
+      } catch (error) {
+        console.error('No se pudo cargar el padrón de mantenimiento guardado.', error);
+        showToast('No se pudo cargar el padrón de mantenimiento guardado en este navegador.', 'error');
+        return [];
+      }
+    }
+
+    function saveMaintenanceStaff(staff) {
+      try {
+        window.localStorage.setItem(MAINTENANCE_STORAGE_KEY, JSON.stringify(staff));
+        return true;
+      } catch (error) {
+        console.error('No se pudo guardar el padrón de mantenimiento.', error);
+        showToast('No se pudo guardar el padrón de mantenimiento. Revisa el almacenamiento disponible en este navegador.', 'error');
         return false;
       }
     }
@@ -1350,6 +1761,376 @@
       }).join('');
     }
 
+    /* ================= PERSONAL DE MANTENIMIENTO ================= */
+    function formatShortDate(value) {
+      const text = String(value ?? '').trim();
+      if (!text) return '—';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+        const [year, month, day] = text.split('-');
+        return `${day}/${month}/${year}`;
+      }
+      const parsed = new Date(text);
+      return Number.isNaN(parsed.getTime()) ? text : parsed.toLocaleDateString('es-AR');
+    }
+
+    function updateMaintenanceKPIs() {
+      const total = state.maintenanceStaff.length;
+      const active = state.maintenanceStaff.filter(person => person.status === 'ACTIVO').length;
+      const exited = total - active;
+      const monthPrefix = new Date().toISOString().slice(0, 7);
+      const exitedThisMonth = state.maintenanceStaff.filter(person =>
+        person.status === 'EGRESADO' && String(person.exitDate ?? '').startsWith(monthPrefix)
+      ).length;
+
+      const setValue = (id, value) => {
+        const node = document.getElementById(id);
+        if (node) node.innerText = value;
+      };
+      setValue('kpi-maint-total', total);
+      setValue('kpi-maint-active', active);
+      setValue('kpi-maint-exited', exited);
+      setValue('kpi-maint-exit-month', exitedThisMonth);
+    }
+
+    function renderMaintenanceStaff() {
+      const tbody = document.getElementById('maintenance-table-body');
+      const countLabel = document.getElementById('maintenance-count');
+      if (!tbody || !countLabel) return;
+
+      const query = (document.getElementById('search-maintenance')?.value || '').toLowerCase();
+      const filtered = state.maintenanceStaff.filter(person =>
+        person.code.toLowerCase().includes(query) ||
+        person.name.toLowerCase().includes(query) ||
+        person.dni.toLowerCase().includes(query) ||
+        person.role.toLowerCase().includes(query) ||
+        person.area.toLowerCase().includes(query)
+      );
+
+      const activeCount = state.maintenanceStaff.filter(person => person.status === 'ACTIVO').length;
+      const exitedCount = state.maintenanceStaff.length - activeCount;
+      countLabel.innerText = `${filtered.length} de ${state.maintenanceStaff.length} · ${activeCount} activo${activeCount === 1 ? '' : 's'} · ${exitedCount} egresado${exitedCount === 1 ? '' : 's'}`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="p-4 text-gray-500">No hay personal de mantenimiento registrado.</td></tr>';
+        updateMaintenanceKPIs();
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(person => {
+        const statusBadge = person.status === 'ACTIVO'
+          ? '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">ACTIVO</span>'
+          : '<span class="px-2 py-0.5 rounded text-[10px] bg-white text-black font-bold font-mono">EGRESADO</span>';
+        const reactivateButton = person.status === 'ACTIVO'
+          ? ''
+          : `<button onclick="reactivateMaintenance('${escapeHtml(person.code)}')" class="px-2 py-1 bg-darkCard border border-darkBorder hover:border-white rounded text-[10px]">Reingresar</button>`;
+
+        return `
+          <tr class="hover:bg-white/5 transition-all">
+            <td class="p-3.5 font-mono font-bold text-white">${escapeHtml(person.code)}</td>
+            <td class="p-3.5 font-semibold">${escapeHtml(person.name)}</td>
+            <td class="p-3.5 font-mono text-gray-400">${escapeHtml(person.dni || '—')}</td>
+            <td class="p-3.5 text-gray-400">${escapeHtml(person.role || '—')}</td>
+            <td class="p-3.5 text-gray-400">${escapeHtml(person.area || '—')}</td>
+            <td class="p-3.5 font-mono text-gray-400">${formatShortDate(person.entryDate)}</td>
+            <td class="p-3.5">${statusBadge}</td>
+            <td class="p-3.5 font-mono text-gray-400">${person.exitDate ? formatShortDate(person.exitDate) : '—'}</td>
+            <td class="p-3.5 text-right space-x-1">
+              ${reactivateButton}
+              <button onclick="deleteMaintenance('${escapeHtml(person.code)}')" class="px-2 py-1 bg-red-950/40 text-red-400 border border-red-900 rounded text-[10px]"><i class="ph-bold ph-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      updateMaintenanceKPIs();
+    }
+
+    function renderMaintenanceExitOptions() {
+      const select = document.getElementById('maint-exit-code');
+      if (!select) return;
+
+      const currentSelection = select.value;
+      const activeStaff = state.maintenanceStaff.filter(person => person.status === 'ACTIVO');
+      select.innerHTML = activeStaff.length
+        ? `<option value="">Selecciona al personal</option>${activeStaff.map(person =>
+          `<option value="${escapeHtml(person.code)}">${escapeHtml(person.code)} - ${escapeHtml(person.name)}</option>`
+        ).join('')}`
+        : '<option value="">No hay personal activo para registrar egreso</option>';
+      if (activeStaff.some(person => person.code === currentSelection)) {
+        select.value = currentSelection;
+      }
+    }
+
+    function normalizeNameKey(value) {
+      return String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    }
+
+    function findMaintenanceByName(name) {
+      const key = normalizeNameKey(name);
+      return state.maintenanceStaff.find(person => normalizeNameKey(person.name) === key);
+    }
+
+    function generateMaintenanceCode(usedCodes) {
+      const codes = Array.isArray(usedCodes) ? [...usedCodes] : [...(usedCodes || [])];
+      const numbers = codes
+        .map(code => Number((String(code).match(/(\d+)\s*$/) || [])[1]))
+        .filter(Number.isFinite);
+      let next = (numbers.length ? Math.max(...numbers) : 0) + 1;
+      let candidate = `MNT-${String(next).padStart(3, '0')}`;
+      while (codes.includes(candidate)) {
+        next += 1;
+        candidate = `MNT-${String(next).padStart(3, '0')}`;
+      }
+      return candidate;
+    }
+
+    function markMaintenanceSaved() {
+      const indicator = document.getElementById('maint-saved-indicator');
+      if (!indicator) return;
+      const time = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      indicator.innerText = `GUARDADO AUTOMÁTICO · ${time}`;
+    }
+
+    function saveMaintenanceQuickAdd(event) {
+      event.preventDefault();
+      const name = document.getElementById('maint-quick-name').value.trim();
+      const role = document.getElementById('maint-quick-role').value.trim();
+      if (!name || !role) {
+        showToast('Completá el nombre y el puesto de la persona.', 'error');
+        return;
+      }
+
+      const manualCode = document.getElementById('maint-quick-code').value.trim().toUpperCase();
+      const code = manualCode || generateMaintenanceCode(state.maintenanceStaff.map(person => person.code));
+      if (state.maintenanceStaff.some(person => person.code === code)) {
+        showToast(`El legajo ${code} ya está registrado.`, 'error');
+        return;
+      }
+      const duplicate = findMaintenanceByName(name);
+      if (duplicate) {
+        showToast(`Ya hay alguien con ese nombre (legajo ${duplicate.code}).`, 'error');
+        return;
+      }
+
+      const person = normalizeMaintenanceRecord({
+        code,
+        name,
+        dni: document.getElementById('maint-quick-dni').value.trim(),
+        role,
+        area: document.getElementById('maint-quick-area').value.trim(),
+        entryDate: new Date().toISOString().slice(0, 10),
+        status: 'ACTIVO'
+      });
+      const updatedStaff = [...state.maintenanceStaff, person];
+      if (!saveMaintenanceStaff(updatedStaff)) return;
+
+      state.maintenanceStaff = updatedStaff;
+      markMaintenanceSaved();
+      event.target.reset();
+      renderAll();
+      showToast(`${name} quedó registrada y guardada (${code}).`, 'success');
+    }
+
+    function saveMaintenanceBulk() {
+      const text = document.getElementById('maint-bulk-text').value;
+      const mode = document.getElementById('maint-bulk-mode').value;
+      const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+      if (!lines.length) {
+        showToast('Pegá al menos una persona.', 'error');
+        return;
+      }
+
+      const usedCodes = new Set(state.maintenanceStaff.map(person => person.code));
+      const usedNames = new Set(state.maintenanceStaff.map(person => normalizeNameKey(person.name)));
+      const added = [];
+      const skipped = [];
+
+      lines.forEach(line => {
+        const parts = mode === 'full'
+          ? line.split(';').map(part => part.trim())
+          : [line];
+        const values = mode === 'full'
+          ? { code: parts[0] || '', name: parts[1] || '', dni: parts[2] || '', role: parts[3] || '', area: parts[4] || '' }
+          : { code: '', name: parts[0] || '', dni: '', role: 'Mantenimiento', area: '' };
+
+        if (!values.name) {
+          skipped.push(line);
+          return;
+        }
+
+        const nameKey = normalizeNameKey(values.name);
+        if (usedNames.has(nameKey)) {
+          skipped.push(line);
+          return;
+        }
+
+        const manualCode = values.code.toUpperCase();
+        const code = manualCode || generateMaintenanceCode(usedCodes);
+        if (usedCodes.has(code)) {
+          skipped.push(line);
+          return;
+        }
+
+        const person = normalizeMaintenanceRecord({
+          ...values,
+          code,
+          entryDate: new Date().toISOString().slice(0, 10),
+          status: 'ACTIVO'
+        });
+        if (!person) {
+          skipped.push(line);
+          return;
+        }
+        usedCodes.add(code);
+        usedNames.add(nameKey);
+        added.push(person);
+      });
+
+      if (!added.length) {
+        showToast('No se agregaron personas. Revisá el formato de las líneas.', 'error');
+        return;
+      }
+
+      const updatedStaff = [...state.maintenanceStaff, ...added];
+      if (!saveMaintenanceStaff(updatedStaff)) return;
+
+      state.maintenanceStaff = updatedStaff;
+      markMaintenanceSaved();
+      document.getElementById('maint-bulk-text').value = '';
+      renderAll();
+      showToast(`${added.length} persona(s) registrada(s) y guardada(s)${skipped.length ? ` · ${skipped.length} omitida(s)` : ''}.`, 'success');
+    }
+
+    function registerMaintenanceExit(event) {
+      event.preventDefault();
+      const code = document.getElementById('maint-exit-code').value;
+      const exitDate = document.getElementById('maint-exit-date').value;
+      const reason = document.getElementById('maint-exit-reason').value.trim();
+      const notes = document.getElementById('maint-exit-notes').value.trim();
+
+      const person = state.maintenanceStaff.find(item => item.code === code);
+      if (!person) {
+        showToast('Selecciona al personal del padrón de mantenimiento.', 'error');
+        return;
+      }
+      if (!exitDate) {
+        showToast('Ingresa la fecha de egreso.', 'error');
+        return;
+      }
+      if (!reason) {
+        showToast('Ingresa el motivo del egreso.', 'error');
+        return;
+      }
+      if (person.status === 'EGRESADO') {
+        showToast(`El legajo ${person.code} ya tiene un egreso registrado.`, 'error');
+        return;
+      }
+
+      const updatedStaff = state.maintenanceStaff.map(item =>
+        item.code === code
+          ? {
+            ...item,
+            exitDate,
+            status: 'EGRESADO',
+            exitReason: reason,
+            notes: notes || item.notes,
+            exitRegisteredAt: new Date().toISOString()
+          }
+          : item
+      );
+      if (!saveMaintenanceStaff(updatedStaff)) return;
+
+      state.maintenanceStaff = updatedStaff;
+      addLog(formatShortDate(exitDate), 'EGRESO PERSONAL', `${person.code} (${person.name})`, `${reason}${notes ? ` — ${notes}` : ''}`);
+      event.target.reset();
+      document.getElementById('maint-exit-date').value = new Date().toISOString().slice(0, 10);
+      markMaintenanceSaved();
+      renderAll();
+      showToast(`Egreso de ${person.name} registrado y guardado.`, 'success');
+    }
+
+    function reactivateMaintenance(code) {
+      const previousStaff = state.maintenanceStaff;
+      const updatedStaff = state.maintenanceStaff.map(person =>
+        person.code === code
+          ? { ...person, status: 'ACTIVO', exitDate: '', exitReason: '', exitRegisteredAt: null }
+          : person
+      );
+      if (!saveMaintenanceStaff(updatedStaff)) {
+        state.maintenanceStaff = previousStaff;
+        return;
+      }
+      state.maintenanceStaff = updatedStaff;
+      renderAll();
+      showToast(`Legajo ${code} vuelve a estar activo.`, 'info');
+    }
+
+    function deleteMaintenance(code) {
+      const previousStaff = state.maintenanceStaff;
+      const updatedStaff = state.maintenanceStaff.filter(person => person.code !== code);
+      if (!saveMaintenanceStaff(updatedStaff)) {
+        state.maintenanceStaff = previousStaff;
+        return;
+      }
+      state.maintenanceStaff = updatedStaff;
+      renderAll();
+      showToast(`Legajo ${code} eliminado del padrón.`, 'info');
+    }
+
+    function openAddMaintenanceModal() {
+      const modal = document.getElementById('modal-add-maintenance');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      const entryDate = document.getElementById('new-maint-entry-date');
+      if (entryDate) entryDate.value = new Date().toISOString().slice(0, 10);
+      document.getElementById('new-maint-code').focus();
+    }
+
+    function closeAddMaintenanceModal() {
+      document.getElementById('modal-add-maintenance').classList.add('hidden');
+    }
+
+    function saveNewMaintenancePerson(event) {
+      event.preventDefault();
+      const code = document.getElementById('new-maint-code').value.trim().toUpperCase();
+      const name = document.getElementById('new-maint-name').value.trim();
+      const dni = document.getElementById('new-maint-dni').value.trim();
+      const role = document.getElementById('new-maint-role').value.trim();
+      const area = document.getElementById('new-maint-area').value.trim();
+      const entryDate = document.getElementById('new-maint-entry-date').value;
+
+      if (!code || !name) {
+        showToast('Completá el legajo y el nombre del personal.', 'error');
+        return;
+      }
+      if (state.maintenanceStaff.some(person => person.code === code)) {
+        showToast('El legajo ya está registrado en el padrón de mantenimiento.', 'error');
+        return;
+      }
+
+      const person = normalizeMaintenanceRecord({
+        code, name, dni, role, area, entryDate,
+        status: 'ACTIVO',
+        exitDate: '',
+        exitReason: '',
+        notes: '',
+        registeredAt: new Date().toISOString()
+      });
+      const updatedStaff = [...state.maintenanceStaff, person];
+      if (!saveMaintenanceStaff(updatedStaff)) return;
+
+      state.maintenanceStaff = updatedStaff;
+      closeAddMaintenanceModal();
+      markMaintenanceSaved();
+      renderAll();
+      showToast(`${name} quedó registrado en el padrón de mantenimiento.`, 'success');
+      event.target.reset();
+    }
+
     /* ================= TERMINAL SCANNER LOGIC ================= */
     function fillScanInput(code) {
       document.getElementById('scan-input').value = code;
@@ -1439,6 +2220,7 @@
 
     function addLog(datetime, type, item, detail) {
       state.logs.unshift({ datetime, type, item, detail });
+      persistBusinessData();
     }
 
     function renderRecentTerminalLogs() {
@@ -1547,21 +2329,36 @@
     function toggleToolStatus(code) {
       const tool = state.tools.find(t => t.code === code);
       if (!tool) return;
+      const previousStatus = tool.status;
       if (tool.status === 'DISPONIBLE') tool.status = 'EN_USO';
       else if (tool.status === 'EN_USO') tool.status = 'MANTENIMIENTO';
       else tool.status = 'DISPONIBLE';
+      if (!persistBusinessData()) {
+        tool.status = previousStatus;
+        return;
+      }
       renderAll();
       showToast(`Estado de ${code} actualizado`, 'info');
     }
 
     function deleteTool(code) {
+      const previousTools = state.tools;
       state.tools = state.tools.filter(t => t.code !== code);
+      if (!persistBusinessData()) {
+        state.tools = previousTools;
+        return;
+      }
       renderAll();
       showToast(`Herramienta ${code} eliminada`, 'info');
     }
 
     function deleteEmployee(code) {
+      const previousEmployees = state.employees;
       state.employees = state.employees.filter(e => e.code !== code);
+      if (!persistBusinessData()) {
+        state.employees = previousEmployees;
+        return;
+      }
       renderAll();
       showToast(`Empleado ${code} eliminado`, 'info');
     }
@@ -1583,7 +2380,12 @@
         return;
       }
 
-      state.tools.push({ code, name, category, status: 'DISPONIBLE', assignedTo: '-' });
+      const newTool = { code, name, category, status: 'DISPONIBLE', assignedTo: '-' };
+      state.tools.push(newTool);
+      if (!persistBusinessData()) {
+        state.tools.pop();
+        return;
+      }
       closeAddToolModal();
       renderAll();
       showToast('Nueva herramienta agregada correctamente', 'success');
@@ -1603,6 +2405,10 @@
       }
 
       state.employees.push({ code, name, dni, role, present: false });
+      if (!persistBusinessData()) {
+        state.employees.pop();
+        return;
+      }
       closeAddEmployeeModal();
       renderAll();
       showToast('Empleado registrado correctamente', 'success');
@@ -1656,6 +2462,7 @@
       const tool = state.tools.find(t => t.code === code);
       if (tool) {
         tool.status = 'MANTENIMIENTO';
+        persistBusinessData();
         renderAll();
       }
 
@@ -1665,94 +2472,597 @@
     }
 
     /* ================= EXCEL INTEGRATION ================= */
+    const EXCEL_HEADER_ALIASES = {
+      code: ['codigo', 'code', 'legajo', 'id', 'nro', 'numero', 'n legajo', 'cod'],
+      name: ['nombre', 'name', 'nombre y apellido', 'apellido y nombre', 'apellido', 'empleado', 'personal', 'descripcion'],
+      dni: ['dni', 'cuil', 'documento', 'nro documento', 'nro de documento'],
+      role: ['puesto', 'rol', 'cargo', 'funcion', 'tarea', 'especialidad'],
+      category: ['categoria', 'tipo', 'rubro', 'clase'],
+      area: ['area', 'empresa', 'division', 'unidad', 'planta', 'sector', 'grupo falmet'],
+      entryDate: ['ingreso', 'fecha ingreso', 'fecha de ingreso', 'alta', 'inicio', 'fecha de alta'],
+      exitDate: ['egreso', 'fecha egreso', 'fecha de egreso', 'salida', 'baja', 'fecha de baja', 'fecha baja'],
+      status: ['estado', 'status', 'situacion', 'condicion'],
+      exitReason: ['motivo egreso', 'motivo', 'causa', 'razon', 'motivo de egreso'],
+      notes: ['observaciones', 'observacion', 'notas', 'obs', 'comentarios']
+    };
+
+    const EXCEL_TARGET_FIELDS = {
+      tools: ['code', 'name', 'category'],
+      employees: ['code', 'name', 'dni', 'role'],
+      maintenance: ['code', 'name', 'dni', 'role', 'area', 'entryDate', 'exitDate', 'status', 'exitReason', 'notes']
+    };
+
+    const EXCEL_TARGET_LABELS = {
+      tools: 'Herramientas / Pañol',
+      employees: 'Personal General',
+      maintenance: 'Personal de Mantenimiento'
+    };
+
+    const EXCEL_FIELD_LABELS = {
+      code: 'LEGAJO / CÓDIGO',
+      name: 'NOMBRE',
+      dni: 'DNI',
+      role: 'PUESTO',
+      category: 'CATEGORÍA',
+      area: 'ÁREA / EMPRESA',
+      entryDate: 'INGRESO',
+      exitDate: 'EGRESO',
+      status: 'ESTADO',
+      exitReason: 'MOTIVO EGRESO',
+      notes: 'OBSERVACIONES'
+    };
+
+    const EXCEL_TEMPLATES = {
+      tools: {
+        sheet: 'Herramientas',
+        file: 'Plantilla_Herramientas_SITEC.xlsx',
+        rows: [
+          ['CODIGO', 'NOMBRE', 'CATEGORIA'],
+          ['HER-101', 'Sierra Circular 1800W', 'Eléctricas'],
+          ['HER-102', 'Nivel Laser Verde 360', 'Medición']
+        ]
+      },
+      employees: {
+        sheet: 'Personal',
+        file: 'Plantilla_Personal_SITEC.xlsx',
+        rows: [
+          ['CODIGO', 'NOMBRE', 'DNI', 'PUESTO'],
+          ['EMP-201', 'Ana Torres', '33222111', 'Operaria de Planta']
+        ]
+      },
+      maintenance: {
+        sheet: 'Mantenimiento',
+        file: 'Plantilla_Mantenimiento_SITEC.xlsx',
+        rows: [
+          ['LEGAJO', 'NOMBRE', 'DNI', 'PUESTO', 'AREA', 'INGRESO', 'EGRESO', 'ESTADO', 'MOTIVO_EGRESO', 'OBSERVACIONES'],
+          ['MNT-001', 'Carlos Díaz', '30111222', 'Mecánico', 'Grupo Falmet', '2026-01-15', '', 'ACTIVO', '', ''],
+          ['MNT-002', 'Luis Sosa', '29222333', 'Ayudante', 'Grupo Falmet', '2025-11-01', '2026-02-20', 'EGRESADO', 'Fin del período de capacitación', 'Capacitación en electromecánica']
+        ]
+      }
+    };
+
+    function normalizeHeaderText(value) {
+      return String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    }
+
+    function mapExcelHeaders(headers, allowedFields) {
+      const normalized = headers.map(normalizeHeaderText);
+      const mapping = {};
+      Object.entries(EXCEL_HEADER_ALIASES).forEach(([field, aliases]) => {
+        if (allowedFields && !allowedFields.includes(field)) return;
+        const cleanAliases = aliases.map(normalizeHeaderText);
+        let index = normalized.findIndex(header => cleanAliases.includes(header));
+        if (index === -1) {
+          index = normalized.findIndex(header => header && cleanAliases.some(alias => alias.length > 3 && header.includes(alias)));
+        }
+        if (index !== -1) mapping[field] = index;
+      });
+      return mapping;
+    }
+
+    function detectExcelTarget(mapping) {
+      if (mapping.exitDate !== undefined || mapping.area !== undefined || mapping.entryDate !== undefined) return 'maintenance';
+      if (mapping.dni !== undefined || mapping.role !== undefined) return 'employees';
+      return 'tools';
+    }
+
+    function readExcelCell(row, index) {
+      if (index === undefined || index === null || index < 0) return '';
+      return String(row[index] ?? '').trim();
+    }
+
+    function normalizeDateCell(value) {
+      const text = String(value ?? '').trim();
+      if (!text) return '';
+      if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+      const dmy = text.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+      if (dmy) {
+        const [, day, month, year] = dmy;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      const parsed = new Date(text);
+      return Number.isNaN(parsed.getTime()) ? text : parsed.toISOString().slice(0, 10);
+    }
+
     function processExcelImport(event) {
       const file = event.target.files[0];
+      event.target.value = '';
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const firstSheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '', raw: false });
 
-        if (jsonData.length < 2) {
-          showToast('El archivo no contiene suficientes datos', 'error');
-          return;
+          if (!jsonData.length) {
+            showToast('El archivo está vacío.', 'error');
+            return;
+          }
+
+          const headers = jsonData[0].map(cell => String(cell ?? '').trim());
+          const rows = jsonData.slice(1).filter(row => row.some(cell => String(cell ?? '').trim() !== ''));
+          if (!rows.length) {
+            showToast('El archivo no contiene filas de datos.', 'error');
+            return;
+          }
+
+          const selection = document.getElementById('excel-import-target').value;
+          const autoMapping = mapExcelHeaders(headers, null);
+          const target = selection === 'auto' ? detectExcelTarget(autoMapping) : selection;
+          const mapping = selection === 'auto' ? autoMapping : mapExcelHeaders(headers, EXCEL_TARGET_FIELDS[target]);
+
+          state.excelParsedData = { fileName: file.name, sheetName, headers, rows, target, mapping };
+          renderExcelPreview();
+        } catch (error) {
+          console.error('No se pudo leer el archivo Excel.', error);
+          showToast('No se pudo leer el archivo. Verificá que sea un .xlsx o .csv válido.', 'error');
         }
-
-        state.excelParsedData = jsonData;
-        renderExcelPreview(jsonData);
       };
       reader.readAsArrayBuffer(file);
     }
 
-    function renderExcelPreview(data) {
+    function changeExcelImportTarget() {
+      const parsed = state.excelParsedData;
+      if (!parsed) return;
+      const selection = document.getElementById('excel-import-target').value;
+      const autoMapping = mapExcelHeaders(parsed.headers, null);
+      parsed.target = selection === 'auto' ? detectExcelTarget(autoMapping) : selection;
+      parsed.mapping = selection === 'auto' ? autoMapping : mapExcelHeaders(parsed.headers, EXCEL_TARGET_FIELDS[parsed.target]);
+      renderExcelPreview();
+    }
+
+    function buildExcelImportPlan(parsed) {
+      const existingCodes = new Set(
+        parsed.target === 'tools' ? state.tools.map(item => item.code)
+          : parsed.target === 'employees' ? state.employees.map(item => item.code)
+            : state.maintenanceStaff.map(item => item.code)
+      );
+
+      return parsed.rows.map(row => {
+        const values = {};
+        Object.entries(parsed.mapping).forEach(([field, index]) => {
+          const raw = readExcelCell(row, index);
+          values[field] = field === 'entryDate' || field === 'exitDate' ? normalizeDateCell(raw) : raw;
+        });
+
+        const code = String(values.code ?? '').trim().toUpperCase();
+        const name = String(values.name ?? '').trim();
+        if (!code || !name) {
+          return { row, values, action: 'invalido', reason: 'Falta legajo/código o nombre' };
+        }
+
+        values.code = code;
+        values.name = name;
+        return { row, values, action: existingCodes.has(code) ? 'actualiza' : 'nuevo', reason: '' };
+      });
+    }
+
+    function renderExcelPreview() {
+      const parsed = state.excelParsedData;
       const container = document.getElementById('excel-preview-container');
+      if (!parsed || !container) return;
+
+      const plan = buildExcelImportPlan(parsed);
+      parsed.plan = plan;
+
+      const newCount = plan.filter(item => item.action === 'nuevo').length;
+      const updateCount = plan.filter(item => item.action === 'actualiza').length;
+      const invalidCount = plan.filter(item => item.action === 'invalido').length;
+      const fields = EXCEL_TARGET_FIELDS[parsed.target];
+
+      const targetLabel = document.getElementById('excel-preview-target');
+      if (targetLabel) targetLabel.innerText = `DESTINO: ${EXCEL_TARGET_LABELS[parsed.target]}`;
+
+      const summary = document.getElementById('excel-preview-summary');
+      if (summary) {
+        const mappingChips = Object.entries(parsed.mapping).map(([field, index]) =>
+          `${EXCEL_FIELD_LABELS[field]} ← "${parsed.headers[index] || `columna ${index + 1}`}"`
+        ).join(' · ');
+        summary.innerHTML = `
+          <p class="text-gray-300">Archivo <strong class="text-white font-mono">${escapeHtml(parsed.fileName)}</strong> · hoja <strong class="text-white font-mono">${escapeHtml(parsed.sheetName)}</strong> · ${plan.length} fila(s) detectada(s).</p>
+          <p class="mt-1 text-gray-500 font-mono text-[10px]">${escapeHtml(mappingChips || 'No se detectaron columnas conocidas')}</p>
+          <p class="mt-2 font-mono text-[11px]">
+            <span class="text-emerald-400">${newCount} nueva(s)</span> ·
+            <span class="text-amber-300">${updateCount} actualiza(ndo)</span> ·
+            <span class="text-red-400">${invalidCount} inválida(s) omitida(s)</span>
+          </p>
+        `;
+      }
+
       const head = document.getElementById('excel-preview-head');
       const body = document.getElementById('excel-preview-body');
+      if (head) {
+        head.innerHTML = `<th class="p-2 border-b border-darkBorder">ESTADO</th>${fields.map(field =>
+          `<th class="p-2 border-b border-darkBorder">${EXCEL_FIELD_LABELS[field]}</th>`
+        ).join('')}`;
+      }
+
+      if (body) {
+        const visible = plan.slice(0, 25);
+        body.innerHTML = visible.length ? visible.map(item => {
+          const badge = item.action === 'nuevo'
+            ? '<span class="text-emerald-400 font-mono text-[10px]">NUEVO</span>'
+            : item.action === 'actualiza'
+              ? '<span class="text-amber-300 font-mono text-[10px]">ACTUALIZA</span>'
+              : `<span class="text-red-400 font-mono text-[10px]" title="${escapeHtml(item.reason)}">OMITE</span>`;
+          const cells = fields.map(field => `<td class="p-2">${escapeHtml(item.values[field] ?? '')}</td>`).join('');
+          return `<tr class="${item.action === 'invalido' ? 'opacity-50' : ''}"><td class="p-2">${badge}</td>${cells}</tr>`;
+        }).join('') : '<tr><td class="p-3 text-gray-500">Sin filas para mostrar.</td></tr>';
+      }
 
       container.classList.remove('hidden');
-      head.innerHTML = data[0].map(h => `<th class="p-2 border-b border-darkBorder">${h}</th>`).join('');
-
-      body.innerHTML = data.slice(1, 6).map(row => `
-        <tr>
-          ${row.map(cell => `<td class="p-2">${cell || ''}</td>`).join('')}
-        </tr>
-      `).join('');
     }
 
     function confirmExcelImport() {
-      if (!state.excelParsedData || state.excelParsedData.length < 2) return;
+      const parsed = state.excelParsedData;
+      if (!parsed) return;
 
-      const rows = state.excelParsedData.slice(1);
+      const plan = parsed.plan && parsed.plan.length ? parsed.plan : buildExcelImportPlan(parsed);
+      const valid = plan.filter(item => item.action !== 'invalido');
+      if (!valid.length) {
+        showToast('No hay filas válidas para insertar.', 'error');
+        return;
+      }
+
+      const snapshot = JSON.parse(JSON.stringify({
+        tools: state.tools,
+        employees: state.employees,
+        maintenanceStaff: state.maintenanceStaff
+      }));
+
       let added = 0;
+      let updated = 0;
 
-      rows.forEach(r => {
-        if (r[0] && r[1]) {
-          state.tools.push({
-            code: String(r[0]).toUpperCase(),
-            name: String(r[1]),
-            category: String(r[2] || 'General'),
-            status: 'DISPONIBLE',
-            assignedTo: '-'
-          });
-          added++;
-        }
-      });
+      if (parsed.target === 'tools') {
+        const toolsByCode = new Map(state.tools.map(tool => [tool.code, tool]));
+        const newTools = [];
+        valid.forEach(item => {
+          const { code, name, category } = item.values;
+          const existing = toolsByCode.get(code);
+          if (existing) {
+            existing.name = name || existing.name;
+            existing.category = category || existing.category;
+            updated++;
+          } else {
+            newTools.push({ code, name, category: category || 'General', status: 'DISPONIBLE', assignedTo: '-' });
+            added++;
+          }
+        });
+        state.tools = [...state.tools, ...newTools];
+      } else if (parsed.target === 'employees') {
+        const employeesByCode = new Map(state.employees.map(employee => [employee.code, employee]));
+        const newEmployees = [];
+        valid.forEach(item => {
+          const { code, name, dni, role } = item.values;
+          const existing = employeesByCode.get(code);
+          if (existing) {
+            existing.name = name || existing.name;
+            if (dni) existing.dni = dni;
+            if (role) existing.role = role;
+            updated++;
+          } else {
+            newEmployees.push({ code, name, dni: dni || '', role: role || '', present: false });
+            added++;
+          }
+        });
+        state.employees = [...state.employees, ...newEmployees];
+      } else {
+        const staffByCode = new Map(state.maintenanceStaff.map(person => [person.code, person]));
+        const newStaff = [];
+        valid.forEach(item => {
+          const values = item.values;
+          const existing = staffByCode.get(values.code);
+          if (existing) {
+            existing.name = values.name || existing.name;
+            if (values.dni) existing.dni = values.dni;
+            if (values.role) existing.role = values.role;
+            if (values.area) existing.area = values.area;
+            if (values.entryDate) existing.entryDate = values.entryDate;
+            if (values.exitDate) {
+              existing.exitDate = values.exitDate;
+              existing.status = 'EGRESADO';
+              existing.exitRegisteredAt = new Date().toISOString();
+            }
+            if (values.exitReason) existing.exitReason = values.exitReason;
+            if (values.notes) existing.notes = values.notes;
+            if (values.status) {
+              const resolvedStatus = resolveStaffStatus(values.status, existing.exitDate);
+              if (resolvedStatus === 'EGRESADO' || existing.status === 'ACTIVO') existing.status = resolvedStatus;
+            }
+            updated++;
+          } else {
+            const record = normalizeMaintenanceRecord({
+              ...values,
+              status: resolveStaffStatus(values.status, values.exitDate),
+              registeredAt: new Date().toISOString(),
+              exitRegisteredAt: values.exitDate ? new Date().toISOString() : null
+            });
+            if (record) {
+              newStaff.push(record);
+              added++;
+            }
+          }
+        });
+        state.maintenanceStaff = [...state.maintenanceStaff, ...newStaff];
+      }
 
+      const saved = parsed.target === 'maintenance'
+        ? (saveMaintenanceStaff(state.maintenanceStaff) && persistBusinessData())
+        : persistBusinessData();
+
+      if (!saved) {
+        state.tools = snapshot.tools;
+        state.employees = snapshot.employees;
+        state.maintenanceStaff = snapshot.maintenanceStaff;
+        showToast('No se pudo guardar la importación. Revisa el almacenamiento del navegador.', 'error');
+        return;
+      }
+
+      state.excelParsedData = null;
       document.getElementById('excel-preview-container').classList.add('hidden');
+      if (parsed.target === 'maintenance') markMaintenanceSaved();
       renderAll();
-      showToast(`Se importaron ${added} herramientas desde Excel`, 'success');
+      showToast(`${added} registro(s) nuevos y ${updated} actualizados desde Excel.`, 'success');
+    }
+
+    function downloadSheet(rows, sheetName, fileName) {
+      const data = rows.length ? rows : [{ 'SIN DATOS': '' }];
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      worksheet['!cols'] = Object.keys(data[0]).map(() => ({ wch: 22 }));
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName.slice(0, 31));
+      XLSX.writeFile(workbook, fileName);
     }
 
     function exportInventoryToExcel() {
       const dataToExport = state.tools.map(t => ({
-        'CÓDIGO': t.code,
+        'CODIGO': t.code,
         'HERRAMIENTA': t.name,
-        'CATEGORÍA': t.category,
+        'CATEGORIA': t.category,
         'ESTADO': t.status,
         'ASIGNADO_A': t.assignedTo
       }));
-
-      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Herramientas S.I.T.E.C");
-
-      XLSX.writeFile(workbook, `SITEC_JACK_SOLUTIONS_INVENTARIO.xlsx`);
+      downloadSheet(dataToExport, 'Herramientas', 'SITEC_JACK_SOLUTIONS_INVENTARIO.xlsx');
       showToast('Planilla Excel generada y descargada', 'success');
     }
 
-    function downloadSampleTemplate() {
-      const sample = [
-        ['CODIGO', 'NOMBRE', 'CATEGORIA'],
-        ['HER-101', 'Sierra Circular 1800W', 'Eléctricas'],
-        ['HER-102', 'Nivel Laser Verde 360', 'Medición']
+    function exportEmployeesToExcel() {
+      const dataToExport = state.employees.map(e => ({
+        'CODIGO': e.code,
+        'NOMBRE': e.name,
+        'DNI': e.dni,
+        'PUESTO': e.role,
+        'ESTADO': e.present ? 'PRESENTE' : 'AUSENTE'
+      }));
+      downloadSheet(dataToExport, 'Personal', 'SITEC_JACK_SOLUTIONS_PERSONAL.xlsx');
+      showToast('Planilla de personal descargada', 'success');
+    }
+
+    function exportMaintenanceToExcel() {
+      const dataToExport = state.maintenanceStaff.map(person => ({
+        'LEGAJO': person.code,
+        'NOMBRE': person.name,
+        'DNI': person.dni,
+        'PUESTO': person.role,
+        'AREA': person.area,
+        'INGRESO': person.entryDate,
+        'ESTADO': person.status,
+        'EGRESO': person.exitDate,
+        'MOTIVO_EGRESO': person.exitReason,
+        'OBSERVACIONES': person.notes
+      }));
+      downloadSheet(dataToExport, 'Mantenimiento', 'SITEC_MANTENIMIENTO.xlsx');
+      showToast('Planilla de personal de mantenimiento descargada', 'success');
+    }
+
+    function exportMaintenanceExitsToExcel() {
+      const dataToExport = state.maintenanceStaff
+        .filter(person => person.status === 'EGRESADO')
+        .map(person => ({
+          'LEGAJO': person.code,
+          'NOMBRE': person.name,
+          'PUESTO': person.role,
+          'AREA': person.area,
+          'INGRESO': person.entryDate,
+          'EGRESO': person.exitDate,
+          'MOTIVO': person.exitReason,
+          'OBSERVACIONES': person.notes
+        }));
+      downloadSheet(dataToExport, 'Egresos', 'SITEC_EGRESOS_MANTENIMIENTO.xlsx');
+      showToast('Historial de egresos descargado', 'success');
+    }
+
+    function exportLogsToExcel() {
+      const dataToExport = state.logs.map(log => ({
+        'FECHA_HORA': log.datetime,
+        'TIPO': log.type,
+        'ITEM': log.item,
+        'DETALLE': log.detail
+      }));
+      downloadSheet(dataToExport, 'Logs', 'SITEC_LOGS.xlsx');
+      showToast('Historial de movimientos descargado', 'success');
+    }
+
+    function exportFullReportToExcel() {
+      const sheets = [
+        {
+          name: 'Herramientas',
+          rows: state.tools.map(t => ({ 'CODIGO': t.code, 'HERRAMIENTA': t.name, 'CATEGORIA': t.category, 'ESTADO': t.status, 'ASIGNADO_A': t.assignedTo }))
+        },
+        {
+          name: 'Personal',
+          rows: state.employees.map(e => ({ 'CODIGO': e.code, 'NOMBRE': e.name, 'DNI': e.dni, 'PUESTO': e.role, 'ESTADO': e.present ? 'PRESENTE' : 'AUSENTE' }))
+        },
+        {
+          name: 'Mantenimiento',
+          rows: state.maintenanceStaff.map(person => ({
+            'LEGAJO': person.code, 'NOMBRE': person.name, 'DNI': person.dni, 'PUESTO': person.role, 'AREA': person.area,
+            'INGRESO': person.entryDate, 'ESTADO': person.status, 'EGRESO': person.exitDate,
+            'MOTIVO_EGRESO': person.exitReason, 'OBSERVACIONES': person.notes
+          }))
+        },
+        {
+          name: 'Egresos',
+          rows: state.maintenanceStaff.filter(person => person.status === 'EGRESADO').map(person => ({
+            'LEGAJO': person.code, 'NOMBRE': person.name, 'PUESTO': person.role, 'AREA': person.area,
+            'INGRESO': person.entryDate, 'EGRESO': person.exitDate, 'MOTIVO': person.exitReason, 'OBSERVACIONES': person.notes
+          }))
+        },
+        {
+          name: 'Logs',
+          rows: state.logs.map(log => ({ 'FECHA_HORA': log.datetime, 'TIPO': log.type, 'ITEM': log.item, 'DETALLE': log.detail }))
+        },
+        {
+          name: 'Vehiculos',
+          rows: state.fleetVehicles.map(vehicle => ({ 'TIPO': vehicle.type, 'PATENTE': vehicle.plate, 'MARCA_MODELO': vehicle.brandModel, 'KM': vehicle.km }))
+        }
       ];
-      const worksheet = XLSX.utils.aoa_to_sheet(sample);
+
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla Modelo");
-      XLSX.writeFile(workbook, "Plantilla_Importacion_SITEC.xlsx");
+      sheets.forEach(sheet => {
+        const data = sheet.rows.length ? sheet.rows : [{ 'SIN DATOS': '' }];
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        worksheet['!cols'] = Object.keys(data[0]).map(() => ({ wch: 22 }));
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name.slice(0, 31));
+      });
+      XLSX.writeFile(workbook, `SITEC_REPORTE_COMPLETO_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      showToast('Reporte completo descargado', 'success');
+    }
+
+    function downloadSampleTemplate(target) {
+      const template = EXCEL_TEMPLATES[target] || EXCEL_TEMPLATES.tools;
+      const worksheet = XLSX.utils.aoa_to_sheet(template.rows);
+      worksheet['!cols'] = template.rows[0].map(() => ({ wch: 20 }));
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, template.sheet.slice(0, 31));
+      XLSX.writeFile(workbook, template.file);
+      showToast(`Plantilla de ${EXCEL_TARGET_LABELS[target] || 'herramientas'} descargada`, 'success');
+    }
+
+    function downloadBackupJson() {
+      const backup = {
+        app: 'S.I.T.E.C - JACK SOLUTIONS',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        tools: state.tools,
+        employees: state.employees,
+        logs: state.logs,
+        maintenanceStaff: state.maintenanceStaff,
+        fleetVehicles: state.fleetVehicles,
+        vehicleTrips: state.vehicleTrips
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `SITEC_RESPALDO_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast('Respaldo completo descargado', 'success');
+    }
+
+    function restoreBackupFromFile(event) {
+      const file = event.target.files[0];
+      event.target.value = '';
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const backup = JSON.parse(e.target.result);
+          if (!backup || typeof backup !== 'object') throw new TypeError('Respaldo inválido');
+
+          if (Array.isArray(backup.tools)) state.tools = backup.tools.filter(isValidTool);
+          if (Array.isArray(backup.employees)) state.employees = backup.employees.filter(isValidEmployee);
+          if (Array.isArray(backup.logs)) state.logs = backup.logs.filter(isValidLog);
+          if (Array.isArray(backup.maintenanceStaff)) {
+            state.maintenanceStaff = backup.maintenanceStaff.map(normalizeMaintenanceRecord).filter(Boolean);
+          }
+          if (Array.isArray(backup.fleetVehicles)) state.fleetVehicles = backup.fleetVehicles;
+          if (Array.isArray(backup.vehicleTrips)) state.vehicleTrips = backup.vehicleTrips;
+
+          persistBusinessData();
+          saveMaintenanceStaff(state.maintenanceStaff);
+          saveFleetVehicles(state.fleetVehicles);
+          saveVehicleTrips(state.vehicleTrips);
+
+          renderAll();
+          showToast('Respaldo restaurado correctamente', 'success');
+        } catch (error) {
+          console.error('No se pudo restaurar el respaldo.', error);
+          showToast('El archivo de respaldo no es válido.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function renderSystemPreview() {
+      const head = document.getElementById('preview-head');
+      const body = document.getElementById('preview-body');
+      const summary = document.getElementById('preview-summary');
+      const sourceSelect = document.getElementById('preview-source');
+      if (!head || !body) return;
+
+      const source = sourceSelect ? sourceSelect.value : 'maintenance';
+      let headers = [];
+      let rows = [];
+
+      if (source === 'tools') {
+        headers = ['CODIGO', 'HERRAMIENTA', 'CATEGORIA', 'ESTADO', 'ASIGNADO_A'];
+        rows = state.tools.map(tool => [tool.code, tool.name, tool.category, tool.status, tool.assignedTo]);
+      } else if (source === 'employees') {
+        headers = ['CODIGO', 'NOMBRE', 'DNI', 'PUESTO', 'ESTADO'];
+        rows = state.employees.map(employee => [employee.code, employee.name, employee.dni, employee.role, employee.present ? 'PRESENTE' : 'AUSENTE']);
+      } else if (source === 'maintenance') {
+        headers = ['LEGAJO', 'NOMBRE', 'DNI', 'PUESTO', 'AREA', 'INGRESO', 'ESTADO', 'EGRESO', 'MOTIVO'];
+        rows = state.maintenanceStaff.map(person => [person.code, person.name, person.dni, person.role, person.area, person.entryDate, person.status, person.exitDate, person.exitReason]);
+      } else if (source === 'logs') {
+        headers = ['FECHA_HORA', 'TIPO', 'ITEM', 'DETALLE'];
+        rows = state.logs.map(log => [log.datetime, log.type, log.item, log.detail]);
+      } else {
+        headers = ['TIPO', 'PATENTE', 'MARCA_MODELO', 'KM'];
+        rows = state.fleetVehicles.map(vehicle => [vehicle.type, vehicle.plate, vehicle.brandModel, vehicle.km]);
+      }
+
+      head.innerHTML = `<tr>${headers.map(title => `<th class="p-2 border-b border-darkBorder">${title}</th>`).join('')}</tr>`;
+      body.innerHTML = rows.length
+        ? rows.slice(0, 100).map(row => `<tr class="hover:bg-white/5">${row.map(cell => `<td class="p-2">${escapeHtml(cell ?? '')}</td>`).join('')}</tr>`).join('')
+        : `<tr><td class="p-3 text-gray-500" colspan="${headers.length}">Todavía no hay datos guardados en esta sección.</td></tr>`;
+
+      if (summary) {
+        summary.innerText = `${rows.length} registro(s) guardados en el sistema${rows.length > 100 ? ' (mostrando los primeros 100)' : ''}.`;
+      }
     }
 
     /* ================= BOT AI LOGIC ================= */
@@ -1810,6 +3120,11 @@
       if (q.includes('fichó') || q.includes('presente') || q.includes('quién')) {
         const present = state.employees.filter(e => e.present).map(e => e.name).join(', ');
         return `Personal fichado presente hoy (${state.employees.filter(e => e.present).length}): <strong>${present || 'Nadie fichado'}</strong>.`;
+      }
+      if (q.includes('egres') || q.includes('personal de mantenimiento')) {
+        const exited = state.maintenanceStaff.filter(person => person.status === 'EGRESADO');
+        const active = state.maintenanceStaff.filter(person => person.status === 'ACTIVO');
+        return `Personal de mantenimiento: <strong>${active.length}</strong> activo(s) y <strong>${exited.length}</strong> egresado(s). Egresos: ${exited.map(person => escapeHtml(person.code)).join(', ') || 'ninguno'}.`;
       }
       if (q.includes('mantenimiento')) {
         const maint = state.tools.filter(t => t.status === 'MANTENIMIENTO');
