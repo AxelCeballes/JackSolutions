@@ -216,7 +216,7 @@
           </div>
           <h3 class="text-lg font-bold text-white">Bot Inteligente JACK</h3>
           <p class="text-xs text-gray-400 leading-relaxed">
-            Asistente conversacional estilo LOTUS listo para responder dudas, consultar estado de herramientas y reportar averías.
+            Asistente conversacional listo para responder dudas, consultar estado de herramientas y reportar averías.
           </p>
         </div>
       </div>
@@ -454,7 +454,7 @@
       </div>
 
       <!-- Admin Sub-tabs -->
-      <div class="flex border-b border-darkBorder space-x-6 text-sm font-medium">
+      <div class="flex overflow-x-auto border-b border-darkBorder space-x-6 text-sm font-medium whitespace-nowrap">
         <button onclick="switchAdminSubtab('inventory')" id="subtab-btn-inventory" class="pb-3 border-b-2 border-white text-white font-bold transition-all">
           Inventario de Herramientas
         </button>
@@ -463,6 +463,9 @@
         </button>
         <button onclick="switchAdminSubtab('logs')" id="subtab-btn-logs" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white transition-all">
           Logs de Movimientos
+        </button>
+        <button onclick="switchAdminSubtab('vehicles')" id="subtab-btn-vehicles" class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white transition-all">
+          Salidas de Vehículos
         </button>
       </div>
 
@@ -539,6 +542,66 @@
                 <!-- JS populated -->
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-subtab-vehicles" class="hidden space-y-6">
+        <div class="border-b border-darkBorder pb-4">
+          <h3 class="text-lg font-bold text-white">Control de egreso y regreso de vehículos</h3>
+          <p class="mt-1 text-xs text-gray-400">Registra cada salida y confirma el regreso con el kilometraje del vehículo.</p>
+        </div>
+
+        <form onsubmit="registerVehicleExit(event)" class="glass-card p-5 rounded-2xl space-y-4">
+          <h4 class="text-sm font-bold text-white">Registrar salida</h4>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+            <label class="space-y-1">
+              <span class="block text-gray-400">Patente</span>
+              <input id="vehicle-plate" type="text" maxlength="12" placeholder="Ej.: AA123BB" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white uppercase" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Conductor</span>
+              <input id="vehicle-driver" type="text" maxlength="100" placeholder="Nombre y apellido" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Destino</span>
+              <input id="vehicle-destination" type="text" maxlength="120" placeholder="Destino del viaje" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Motivo</span>
+              <input id="vehicle-reason" type="text" maxlength="160" placeholder="Motivo de la salida" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Kilometraje de salida</span>
+              <input id="vehicle-exit-km" type="number" min="0" step="0.1" placeholder="Ej.: 24500" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+          </div>
+          <button type="submit" class="bg-white hover:bg-gray-200 text-black font-bold px-4 py-2.5 rounded-xl text-xs">Registrar egreso</button>
+        </form>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-white">Registro de movimientos</h4>
+            <span id="vehicle-trip-count" class="text-xs text-gray-500 font-mono"></span>
+          </div>
+          <div class="glass-card rounded-2xl overflow-hidden border border-darkBorder">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[900px] text-left text-xs">
+                <thead class="bg-black/60 text-gray-400 font-mono uppercase border-b border-darkBorder">
+                  <tr>
+                    <th class="p-3.5">Patente / Conductor</th>
+                    <th class="p-3.5">Destino / Motivo</th>
+                    <th class="p-3.5">Fecha de salida</th>
+                    <th class="p-3.5">Salida / regreso (km)</th>
+                    <th class="p-3.5">Estado</th>
+                    <th class="p-3.5">Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="vehicle-trips-table-body" class="divide-y divide-darkBorder text-gray-300">
+                  <tr><td colspan="6" class="p-4 text-gray-500">Aún no hay movimientos de vehículos.</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -748,7 +811,7 @@
   </div>
 
 
-  <!-- ==================== WIDGET BOT INTELIGENTE (ESTILO LOTUS) ==================== -->
+  <!-- ==================== WIDGET BOT INTELIGENTE ==================== -->
   <div id="bot-modal" class="fixed bottom-4 right-4 z-50 w-full max-w-sm hidden">
     <div class="glass-panel border-2 border-white/20 rounded-2xl shadow-2xl flex flex-col h-[480px] overflow-hidden">
       <!-- Chat Header -->
@@ -821,11 +884,13 @@
         { datetime: '2026-10-21 08:30', type: 'ASISTENCIA', item: 'EMP-101 (Juan Pérez)', detail: 'Fichaje de Ingreso' },
         { datetime: '2026-10-21 09:15', type: 'PRÉSTAMO', item: 'HER-002 -> EMP-101', detail: 'Salida de Pañol' }
       ],
+      vehicleTrips: [],
       excelParsedData: null
     };
 
     /* ================= INIT & EVENT LISTENERS ================= */
     window.addEventListener('DOMContentLoaded', () => {
+      state.vehicleTrips = loadVehicleTrips();
       renderAll();
     });
 
@@ -833,6 +898,7 @@
       renderInventoryTable();
       renderEmployeesTable();
       renderLogsTable();
+      renderVehicleTrips();
       renderRecentTerminalLogs();
       updateKPIs();
       populatePortalUserDropdown();
@@ -917,7 +983,7 @@
 
     function switchAdminSubtab(subtab) {
       state.adminSubtab = subtab;
-      ['inventory', 'employees', 'logs'].forEach(st => {
+      ['inventory', 'employees', 'logs', 'vehicles'].forEach(st => {
         document.getElementById(`admin-subtab-${st}`).classList.add('hidden');
         const btn = document.getElementById(`subtab-btn-${st}`);
         btn.classList.remove('border-white', 'text-white', 'font-bold');
@@ -928,6 +994,155 @@
       const activeBtn = document.getElementById(`subtab-btn-${subtab}`);
       activeBtn.classList.remove('border-transparent', 'text-gray-400');
       activeBtn.classList.add('border-white', 'text-white', 'font-bold');
+    }
+
+    const VEHICLE_TRIPS_STORAGE_KEY = 'sitec-jack-solutions-vehicle-trips';
+
+    function loadVehicleTrips() {
+      try {
+        const savedTrips = window.localStorage.getItem(VEHICLE_TRIPS_STORAGE_KEY);
+        if (savedTrips === null) return [];
+
+        const trips = JSON.parse(savedTrips);
+        if (!Array.isArray(trips) || !trips.every(trip =>
+          trip && typeof trip.id === 'string' &&
+          typeof trip.plate === 'string' &&
+          typeof trip.driver === 'string' &&
+          typeof trip.destination === 'string' &&
+          typeof trip.reason === 'string' &&
+          Number.isFinite(trip.exitKm) &&
+          typeof trip.exitAt === 'string' &&
+          (trip.returnKm === null || Number.isFinite(trip.returnKm)) &&
+          (trip.returnAt === null || typeof trip.returnAt === 'string')
+        )) {
+          throw new TypeError('Formato de movimientos de vehículos inválido');
+        }
+        return trips;
+      } catch (error) {
+        console.error('No se pudieron cargar los movimientos de vehículos guardados.', error);
+        showToast('No se pudieron cargar los movimientos de vehículos guardados en este navegador.', 'error');
+        return [];
+      }
+    }
+
+    function saveVehicleTrips(trips) {
+      try {
+        window.localStorage.setItem(VEHICLE_TRIPS_STORAGE_KEY, JSON.stringify(trips));
+        return true;
+      } catch (error) {
+        console.error('No se pudieron guardar los movimientos de vehículos.', error);
+        showToast('No se pudo guardar el movimiento. Revisa el almacenamiento disponible en este navegador.', 'error');
+        return false;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[character]);
+    }
+
+    function formatVehicleDate(value) {
+      return new Date(value).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+    }
+
+    function registerVehicleExit(event) {
+      event.preventDefault();
+      const plate = document.getElementById('vehicle-plate').value.trim().toUpperCase();
+      const driver = document.getElementById('vehicle-driver').value.trim();
+      const destination = document.getElementById('vehicle-destination').value.trim();
+      const reason = document.getElementById('vehicle-reason').value.trim();
+      const exitKm = Number(document.getElementById('vehicle-exit-km').value);
+
+      if (!plate || !driver || !destination || !reason || !Number.isFinite(exitKm) || exitKm < 0) {
+        showToast('Completa todos los datos con un kilometraje válido.', 'error');
+        return;
+      }
+      if (state.vehicleTrips.some(trip => trip.plate === plate && trip.returnAt === null)) {
+        showToast(`El vehículo ${plate} ya tiene una salida pendiente de regreso.`, 'error');
+        return;
+      }
+
+      const trip = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        plate,
+        driver,
+        destination,
+        reason,
+        exitKm,
+        exitAt: new Date().toISOString(),
+        returnKm: null,
+        returnAt: null
+      };
+      const updatedTrips = [trip, ...state.vehicleTrips];
+      if (!saveVehicleTrips(updatedTrips)) return;
+
+      state.vehicleTrips = updatedTrips;
+      addLog(formatVehicleDate(trip.exitAt), 'EGRESO VEHÍCULO', `${plate} (${driver})`, `${destination} — ${reason}; salida ${exitKm} km`);
+      event.target.reset();
+      renderAll();
+      showToast(`Egreso del vehículo ${plate} registrado.`, 'success');
+    }
+
+    function registerVehicleReturn(tripId) {
+      const trip = state.vehicleTrips.find(item => item.id === tripId);
+      if (!trip || trip.returnAt !== null) {
+        showToast('Este movimiento ya fue cerrado o no existe.', 'error');
+        return;
+      }
+
+      const returnInput = document.getElementById(`vehicle-return-km-${tripId}`);
+      const returnKm = Number(returnInput.value);
+      if (returnInput.value === '' || !Number.isFinite(returnKm) || returnKm < trip.exitKm) {
+        showToast(`El kilometraje de regreso debe ser igual o mayor a ${trip.exitKm} km.`, 'error');
+        return;
+      }
+
+      const returnAt = new Date().toISOString();
+      const updatedTrips = state.vehicleTrips.map(item =>
+        item.id === tripId ? { ...item, returnKm, returnAt } : item
+      );
+      if (!saveVehicleTrips(updatedTrips)) return;
+
+      state.vehicleTrips = updatedTrips;
+      addLog(formatVehicleDate(returnAt), 'REGRESO VEHÍCULO', `${trip.plate} (${trip.driver})`, `Regreso ${returnKm} km; recorrido ${returnKm - trip.exitKm} km`);
+      renderAll();
+      showToast(`Regreso del vehículo ${trip.plate} registrado.`, 'success');
+    }
+
+    function renderVehicleTrips() {
+      const tbody = document.getElementById('vehicle-trips-table-body');
+      const count = document.getElementById('vehicle-trip-count');
+      if (!tbody || !count) return;
+
+      const activeCount = state.vehicleTrips.filter(trip => trip.returnAt === null).length;
+      count.textContent = `${state.vehicleTrips.length} movimiento${state.vehicleTrips.length === 1 ? '' : 's'} · ${activeCount} vehículo${activeCount === 1 ? '' : 's'} fuera`;
+      if (state.vehicleTrips.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-gray-500">Aún no hay movimientos de vehículos.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = state.vehicleTrips.map(trip => {
+        const active = trip.returnAt === null;
+        const action = active
+          ? `<div class="flex items-center gap-2"><label class="sr-only" for="vehicle-return-km-${escapeHtml(trip.id)}">Kilometraje de regreso para ${escapeHtml(trip.plate)}</label><input id="vehicle-return-km-${escapeHtml(trip.id)}" type="number" min="${trip.exitKm}" step="0.1" placeholder="Km regreso" class="w-28 bg-black border border-darkBorder p-2 rounded text-white outline-none focus:border-white" /><button onclick="registerVehicleReturn('${escapeHtml(trip.id)}')" class="bg-white text-black font-bold px-2.5 py-2 rounded text-[10px]">Registrar regreso</button></div>`
+          : `<span class="text-[10px] text-gray-400">${formatVehicleDate(trip.returnAt)}</span>`;
+
+        return `
+          <tr class="hover:bg-white/5">
+            <td class="p-3.5"><strong class="block text-white">${escapeHtml(trip.plate)}</strong><span>${escapeHtml(trip.driver)}</span></td>
+            <td class="p-3.5"><strong class="block text-white">${escapeHtml(trip.destination)}</strong><span>${escapeHtml(trip.reason)}</span></td>
+            <td class="p-3.5">${formatVehicleDate(trip.exitAt)}</td>
+            <td class="p-3.5 font-mono">${trip.exitKm} / ${active ? '—' : trip.returnKm}</td>
+            <td class="p-3.5">${active ? '<span class="text-amber-300 font-bold">FUERA</span>' : '<span class="text-emerald-400 font-bold">REGRESÓ</span>'}</td>
+            <td class="p-3.5">${action}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
     /* ================= TERMINAL SCANNER LOGIC ================= */
@@ -1030,8 +1245,8 @@
       container.innerHTML = state.logs.slice(0, 5).map(log => `
         <div class="p-2 rounded bg-black/60 border border-darkBorder flex items-center justify-between">
           <div>
-            <span class="font-bold text-white block">${log.item}</span>
-            <span class="text-[10px] text-gray-400">${log.detail}</span>
+            <span class="font-bold text-white block">${escapeHtml(log.item)}</span>
+            <span class="text-[10px] text-gray-400">${escapeHtml(log.detail)}</span>
           </div>
           <span class="text-[9px] font-mono text-gray-500">${log.datetime}</span>
         </div>
@@ -1116,10 +1331,10 @@
       const tbody = document.getElementById('logs-table-body');
       tbody.innerHTML = state.logs.map(l => `
         <tr class="hover:bg-white/5">
-          <td class="p-3.5 text-gray-500 text-[11px]">${l.datetime}</td>
-          <td class="p-3.5 font-bold text-white">${l.type}</td>
-          <td class="p-3.5 text-gray-300">${l.item}</td>
-          <td class="p-3.5 text-gray-400">${l.detail}</td>
+          <td class="p-3.5 text-gray-500 text-[11px]">${escapeHtml(l.datetime)}</td>
+          <td class="p-3.5 font-bold text-white">${escapeHtml(l.type)}</td>
+          <td class="p-3.5 text-gray-300">${escapeHtml(l.item)}</td>
+          <td class="p-3.5 text-gray-400">${escapeHtml(l.detail)}</td>
         </tr>
       `).join('');
     }
@@ -1335,7 +1550,7 @@
       XLSX.writeFile(workbook, "Plantilla_Importacion_SITEC.xlsx");
     }
 
-    /* ================= BOT AI LOGIC (LOTUS STYLE) ================= */
+    /* ================= BOT AI LOGIC ================= */
     function toggleBotModal() {
       document.getElementById('bot-modal').classList.toggle('hidden');
     }
