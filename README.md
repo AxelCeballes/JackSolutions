@@ -26,7 +26,7 @@ https://jacksolutions.vercel.app/
 
 ## Control de vehículos
 
-Desde el Panel Admin, abre **Salidas de Vehículos** para registrar la patente, conductor, destino, motivo y kilometraje de salida. Al regreso, ingresa el kilometraje final para cerrar el movimiento y consultar el recorrido. No se permite registrar otra salida para una patente que todavía figura fuera ni un kilometraje de regreso menor al de salida.
+Desde el Panel Admin, abre **Salidas de Vehículos** para agregar al padrón autos y camionetas con patente, marca/modelo y kilometraje actual. Registra el egreso seleccionando un vehículo de la flota e ingresando conductor, destino, motivo y kilometraje de salida. Al regreso, ingresa el kilometraje final para cerrar el movimiento y actualizar el vehículo. No se permite duplicar una patente, sacar un vehículo que ya está fuera ni usar un kilometraje menor al actual.
 
 Los movimientos se guardan en el almacenamiento local del navegador. No se sincronizan entre dispositivos ni navegadores, y pueden perderse al borrar los datos del sitio; esta aplicación estática no usa una base de datos ni un servidor de autenticación.
 

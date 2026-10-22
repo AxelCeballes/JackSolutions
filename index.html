@@ -548,16 +548,69 @@
 
       <div id="admin-subtab-vehicles" class="hidden space-y-6">
         <div class="border-b border-darkBorder pb-4">
-          <h3 class="text-lg font-bold text-white">Control de egreso y regreso de vehículos</h3>
-          <p class="mt-1 text-xs text-gray-400">Registra cada salida y confirma el regreso con el kilometraje del vehículo.</p>
+          <h3 class="text-lg font-bold text-white">Flota, egresos y regresos</h3>
+          <p class="mt-1 text-xs text-gray-400">Administra los autos y camionetas del lugar y controla sus movimientos.</p>
+        </div>
+
+        <form onsubmit="registerFleetVehicle(event)" class="glass-card p-5 rounded-2xl space-y-4">
+          <h4 class="text-sm font-bold text-white">Agregar vehículo al padrón</h4>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <label class="space-y-1">
+              <span class="block text-gray-400">Tipo</span>
+              <select id="fleet-vehicle-type" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white">
+                <option value="Auto">Auto</option>
+                <option value="Camioneta">Camioneta</option>
+              </select>
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Patente</span>
+              <input id="fleet-vehicle-plate" type="text" maxlength="12" placeholder="Ej.: AA123BB" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white uppercase" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Marca y modelo</span>
+              <input id="fleet-vehicle-model" type="text" maxlength="100" placeholder="Ej.: Ford Ranger" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Kilometraje actual</span>
+              <input id="fleet-vehicle-km" type="number" min="0" step="0.1" placeholder="Ej.: 24500" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+          </div>
+          <button type="submit" class="bg-white hover:bg-gray-200 text-black font-bold px-4 py-2.5 rounded-xl text-xs">Agregar a la flota</button>
+        </form>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm font-bold text-white">Autos y camionetas del lugar</h4>
+            <span id="fleet-vehicle-count" class="text-xs text-gray-500 font-mono"></span>
+          </div>
+          <div class="glass-card rounded-2xl overflow-hidden border border-darkBorder">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[650px] text-left text-xs">
+                <thead class="bg-black/60 text-gray-400 font-mono uppercase border-b border-darkBorder">
+                  <tr>
+                    <th class="p-3.5">Tipo</th>
+                    <th class="p-3.5">Patente</th>
+                    <th class="p-3.5">Marca / modelo</th>
+                    <th class="p-3.5">Kilometraje actual</th>
+                    <th class="p-3.5">Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="fleet-vehicles-table-body" class="divide-y divide-darkBorder text-gray-300">
+                  <tr><td colspan="5" class="p-4 text-gray-500">Aún no hay vehículos en el padrón.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <form onsubmit="registerVehicleExit(event)" class="glass-card p-5 rounded-2xl space-y-4">
-          <h4 class="text-sm font-bold text-white">Registrar salida</h4>
+          <h4 class="text-sm font-bold text-white">Registrar egreso de un vehículo</h4>
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
             <label class="space-y-1">
-              <span class="block text-gray-400">Patente</span>
-              <input id="vehicle-plate" type="text" maxlength="12" placeholder="Ej.: AA123BB" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white uppercase" required />
+              <span class="block text-gray-400">Vehículo de la flota</span>
+              <select id="vehicle-exit-id" onchange="selectVehicleForExit()" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required>
+                <option value="">Agrega primero un auto o camioneta</option>
+              </select>
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Conductor</span>
@@ -573,7 +626,7 @@
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Kilometraje de salida</span>
-              <input id="vehicle-exit-km" type="number" min="0" step="0.1" placeholder="Ej.: 24500" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+              <input id="vehicle-exit-km" type="number" min="0" step="0.1" placeholder="Se completa al elegir el vehículo" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
             </label>
           </div>
           <button type="submit" class="bg-white hover:bg-gray-200 text-black font-bold px-4 py-2.5 rounded-xl text-xs">Registrar egreso</button>
@@ -884,12 +937,14 @@
         { datetime: '2026-10-21 08:30', type: 'ASISTENCIA', item: 'EMP-101 (Juan Pérez)', detail: 'Fichaje de Ingreso' },
         { datetime: '2026-10-21 09:15', type: 'PRÉSTAMO', item: 'HER-002 -> EMP-101', detail: 'Salida de Pañol' }
       ],
+      fleetVehicles: [],
       vehicleTrips: [],
       excelParsedData: null
     };
 
     /* ================= INIT & EVENT LISTENERS ================= */
     window.addEventListener('DOMContentLoaded', () => {
+      state.fleetVehicles = loadFleetVehicles();
       state.vehicleTrips = loadVehicleTrips();
       renderAll();
     });
@@ -898,6 +953,7 @@
       renderInventoryTable();
       renderEmployeesTable();
       renderLogsTable();
+      renderFleetVehicles();
       renderVehicleTrips();
       renderRecentTerminalLogs();
       updateKPIs();
@@ -997,6 +1053,41 @@
     }
 
     const VEHICLE_TRIPS_STORAGE_KEY = 'sitec-jack-solutions-vehicle-trips';
+    const FLEET_VEHICLES_STORAGE_KEY = 'sitec-jack-solutions-fleet-vehicles';
+
+    function loadFleetVehicles() {
+      try {
+        const savedVehicles = window.localStorage.getItem(FLEET_VEHICLES_STORAGE_KEY);
+        if (savedVehicles === null) return [];
+
+        const vehicles = JSON.parse(savedVehicles);
+        if (!Array.isArray(vehicles) || !vehicles.every(vehicle =>
+          vehicle && typeof vehicle.id === 'string' &&
+          ['Auto', 'Camioneta'].includes(vehicle.type) &&
+          typeof vehicle.plate === 'string' &&
+          typeof vehicle.brandModel === 'string' &&
+          Number.isFinite(vehicle.km) && vehicle.km >= 0
+        )) {
+          throw new TypeError('Formato del padrón de vehículos inválido');
+        }
+        return vehicles;
+      } catch (error) {
+        console.error('No se pudo cargar el padrón de vehículos guardado.', error);
+        showToast('No se pudo cargar el padrón de vehículos guardado en este navegador.', 'error');
+        return [];
+      }
+    }
+
+    function saveFleetVehicles(vehicles) {
+      try {
+        window.localStorage.setItem(FLEET_VEHICLES_STORAGE_KEY, JSON.stringify(vehicles));
+        return true;
+      } catch (error) {
+        console.error('No se pudo guardar el padrón de vehículos.', error);
+        showToast('No se pudo guardar el vehículo. Revisa el almacenamiento disponible en este navegador.', 'error');
+        return false;
+      }
+    }
 
     function loadVehicleTrips() {
       try {
@@ -1005,7 +1096,7 @@
 
         const trips = JSON.parse(savedTrips);
         if (!Array.isArray(trips) || !trips.every(trip =>
-          trip && typeof trip.id === 'string' &&
+          trip && typeof trip.id === 'string' && /^\d+-[a-z0-9]+$/.test(trip.id) &&
           typeof trip.plate === 'string' &&
           typeof trip.driver === 'string' &&
           typeof trip.destination === 'string' &&
@@ -1036,6 +1127,30 @@
       }
     }
 
+    function saveVehicleReturn(trips, vehicles) {
+      let previousTrips;
+      let previousVehicles;
+      try {
+        previousTrips = window.localStorage.getItem(VEHICLE_TRIPS_STORAGE_KEY);
+        previousVehicles = window.localStorage.getItem(FLEET_VEHICLES_STORAGE_KEY);
+        window.localStorage.setItem(VEHICLE_TRIPS_STORAGE_KEY, JSON.stringify(trips));
+        window.localStorage.setItem(FLEET_VEHICLES_STORAGE_KEY, JSON.stringify(vehicles));
+        return true;
+      } catch (error) {
+        try {
+          if (previousTrips === null) window.localStorage.removeItem(VEHICLE_TRIPS_STORAGE_KEY);
+          else if (previousTrips !== undefined) window.localStorage.setItem(VEHICLE_TRIPS_STORAGE_KEY, previousTrips);
+          if (previousVehicles === null) window.localStorage.removeItem(FLEET_VEHICLES_STORAGE_KEY);
+          else if (previousVehicles !== undefined) window.localStorage.setItem(FLEET_VEHICLES_STORAGE_KEY, previousVehicles);
+        } catch (rollbackError) {
+          console.error('No se pudo restaurar el estado previo de los movimientos del vehículo.', rollbackError);
+        }
+        console.error('No se pudo guardar el regreso y actualizar el kilometraje del vehículo.', error);
+        showToast('No se pudo guardar el regreso y actualizar la flota. Revisa el almacenamiento disponible.', 'error');
+        return false;
+      }
+    }
+
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, character => ({
         '&': '&amp;',
@@ -1050,26 +1165,110 @@
       return new Date(value).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
     }
 
+    function registerFleetVehicle(event) {
+      event.preventDefault();
+      const type = document.getElementById('fleet-vehicle-type').value;
+      const plate = document.getElementById('fleet-vehicle-plate').value.trim().toUpperCase();
+      const brandModel = document.getElementById('fleet-vehicle-model').value.trim();
+      const km = Number(document.getElementById('fleet-vehicle-km').value);
+
+      if (!['Auto', 'Camioneta'].includes(type) || !plate || !brandModel || !Number.isFinite(km) || km < 0) {
+        showToast('Completa los datos del vehículo con un kilometraje válido.', 'error');
+        return;
+      }
+      if (state.fleetVehicles.some(vehicle => vehicle.plate === plate)) {
+        showToast(`La patente ${plate} ya está en el padrón.`, 'error');
+        return;
+      }
+
+      const vehicle = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        type,
+        plate,
+        brandModel,
+        km
+      };
+      const updatedVehicles = [...state.fleetVehicles, vehicle];
+      if (!saveFleetVehicles(updatedVehicles)) return;
+
+      state.fleetVehicles = updatedVehicles;
+      event.target.reset();
+      renderAll();
+      showToast(`${type} ${plate} agregado a la flota.`, 'success');
+    }
+
+    function selectVehicleForExit() {
+      const vehicleId = document.getElementById('vehicle-exit-id').value;
+      const vehicle = state.fleetVehicles.find(item => item.id === vehicleId);
+      const kmInput = document.getElementById('vehicle-exit-km');
+      kmInput.value = vehicle ? vehicle.km : '';
+      kmInput.min = vehicle ? vehicle.km : '0';
+    }
+
+    function renderFleetVehicles() {
+      const tbody = document.getElementById('fleet-vehicles-table-body');
+      const count = document.getElementById('fleet-vehicle-count');
+      const select = document.getElementById('vehicle-exit-id');
+      if (!tbody || !count || !select) return;
+
+      const currentSelection = select.value;
+      const activePlates = new Set(state.vehicleTrips
+        .filter(trip => trip.returnAt === null)
+        .map(trip => trip.plate));
+      const availableCount = state.fleetVehicles.filter(vehicle => !activePlates.has(vehicle.plate)).length;
+      count.textContent = `${state.fleetVehicles.length} vehículo${state.fleetVehicles.length === 1 ? '' : 's'} · ${availableCount} disponible${availableCount === 1 ? '' : 's'}`;
+
+      if (state.fleetVehicles.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-gray-500">Aún no hay vehículos en el padrón. Agrega un auto o camioneta para comenzar.</td></tr>';
+      } else {
+        tbody.innerHTML = state.fleetVehicles.map(vehicle => {
+          const active = activePlates.has(vehicle.plate);
+          return `
+            <tr class="hover:bg-white/5">
+              <td class="p-3.5">${escapeHtml(vehicle.type)}</td>
+              <td class="p-3.5 font-mono font-bold text-white">${escapeHtml(vehicle.plate)}</td>
+              <td class="p-3.5">${escapeHtml(vehicle.brandModel)}</td>
+              <td class="p-3.5 font-mono">${vehicle.km} km</td>
+              <td class="p-3.5">${active ? '<span class="text-amber-300 font-bold">FUERA</span>' : '<span class="text-emerald-400 font-bold">DISPONIBLE</span>'}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const availableVehicles = state.fleetVehicles.filter(vehicle => !activePlates.has(vehicle.plate));
+      select.innerHTML = availableVehicles.length
+        ? `<option value="">Selecciona un vehículo</option>${availableVehicles.map(vehicle =>
+          `<option value="${escapeHtml(vehicle.id)}">${escapeHtml(vehicle.type)} · ${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicle.brandModel)} (${vehicle.km} km)</option>`
+        ).join('')}`
+        : '<option value="">No hay vehículos disponibles para salir</option>';
+      if (availableVehicles.some(vehicle => vehicle.id === currentSelection)) {
+        select.value = currentSelection;
+      }
+      selectVehicleForExit();
+    }
+
     function registerVehicleExit(event) {
       event.preventDefault();
-      const plate = document.getElementById('vehicle-plate').value.trim().toUpperCase();
+      const vehicleId = document.getElementById('vehicle-exit-id').value;
+      const vehicle = state.fleetVehicles.find(item => item.id === vehicleId);
       const driver = document.getElementById('vehicle-driver').value.trim();
       const destination = document.getElementById('vehicle-destination').value.trim();
       const reason = document.getElementById('vehicle-reason').value.trim();
       const exitKm = Number(document.getElementById('vehicle-exit-km').value);
 
-      if (!plate || !driver || !destination || !reason || !Number.isFinite(exitKm) || exitKm < 0) {
-        showToast('Completa todos los datos con un kilometraje válido.', 'error');
+      if (!vehicle || !driver || !destination || !reason || !Number.isFinite(exitKm) || exitKm < vehicle.km) {
+        showToast('Selecciona un vehículo y completa los datos. El kilometraje no puede ser menor al actual.', 'error');
         return;
       }
-      if (state.vehicleTrips.some(trip => trip.plate === plate && trip.returnAt === null)) {
-        showToast(`El vehículo ${plate} ya tiene una salida pendiente de regreso.`, 'error');
+      if (state.vehicleTrips.some(trip => (trip.vehicleId === vehicle.id || trip.plate === vehicle.plate) && trip.returnAt === null)) {
+        showToast(`El vehículo ${vehicle.plate} ya tiene una salida pendiente de regreso.`, 'error');
         return;
       }
 
       const trip = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        plate,
+        vehicleId: vehicle.id,
+        plate: vehicle.plate,
         driver,
         destination,
         reason,
@@ -1082,7 +1281,7 @@
       if (!saveVehicleTrips(updatedTrips)) return;
 
       state.vehicleTrips = updatedTrips;
-      addLog(formatVehicleDate(trip.exitAt), 'EGRESO VEHÍCULO', `${plate} (${driver})`, `${destination} — ${reason}; salida ${exitKm} km`);
+      addLog(formatVehicleDate(trip.exitAt), 'EGRESO VEHÍCULO', `${vehicle.plate} (${driver})`, `${vehicle.brandModel}; ${destination} — ${reason}; salida ${exitKm} km`);
       event.target.reset();
       renderAll();
       showToast(`Egreso del vehículo ${plate} registrado.`, 'success');
@@ -1096,9 +1295,11 @@
       }
 
       const returnInput = document.getElementById(`vehicle-return-km-${tripId}`);
+      const vehicle = state.fleetVehicles.find(item => item.id === trip.vehicleId || item.plate === trip.plate);
       const returnKm = Number(returnInput.value);
-      if (returnInput.value === '' || !Number.isFinite(returnKm) || returnKm < trip.exitKm) {
-        showToast(`El kilometraje de regreso debe ser igual o mayor a ${trip.exitKm} km.`, 'error');
+      const minimumKm = Math.max(trip.exitKm, vehicle ? vehicle.km : 0);
+      if (returnInput.value === '' || !Number.isFinite(returnKm) || returnKm < minimumKm) {
+        showToast(`El kilometraje de regreso debe ser igual o mayor a ${minimumKm} km.`, 'error');
         return;
       }
 
@@ -1106,9 +1307,13 @@
       const updatedTrips = state.vehicleTrips.map(item =>
         item.id === tripId ? { ...item, returnKm, returnAt } : item
       );
-      if (!saveVehicleTrips(updatedTrips)) return;
+      const updatedVehicles = vehicle
+        ? state.fleetVehicles.map(item => item.id === vehicle.id ? { ...item, km: returnKm } : item)
+        : state.fleetVehicles;
+      if (vehicle ? !saveVehicleReturn(updatedTrips, updatedVehicles) : !saveVehicleTrips(updatedTrips)) return;
 
       state.vehicleTrips = updatedTrips;
+      state.fleetVehicles = updatedVehicles;
       addLog(formatVehicleDate(returnAt), 'REGRESO VEHÍCULO', `${trip.plate} (${trip.driver})`, `Regreso ${returnKm} km; recorrido ${returnKm - trip.exitKm} km`);
       renderAll();
       showToast(`Regreso del vehículo ${trip.plate} registrado.`, 'success');
