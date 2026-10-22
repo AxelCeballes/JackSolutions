@@ -43,6 +43,8 @@ Desde el Panel Admin, abre **Personal Mantenimiento** para cargar el padrón del
 
 El indicador verde *GUARDADO AUTOMÁTICO · hora* confirma cada alta; el padrón se conserva al recargar o cerrar el navegador.
 
+> **Notas de uso**: el legajo, el DNI y el área son **opcionales**; si el legajo queda vacío se genera solo el siguiente libre (`MNT-001`, `MNT-002`, …) y el área por defecto es *Grupo Falmet*. Si falta un dato obligatorio, el formulario muestra el motivo en rojo y un aviso, en lugar de quedar en silencio. Lo mismo aplica al alta de empleados (`EMP-1xx`) y herramientas (`HER-0xx`) del Panel Admin.
+
 - **Registrar egreso**: se selecciona al personal activo, la fecha, el motivo (por ejemplo, el fin del período de capacitación) y observaciones. El legajo pasa a estado `EGRESADO` y **permanece en el padrón como historial**: el registro no se borra, se conserva.
 - **Reingresar**: devuelve un legajo egresado al estado `ACTIVO` sin perder el resto de los datos.
 - Indicadores en pantalla: total del padrón, activos, egresados y egresos del mes.

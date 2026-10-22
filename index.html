@@ -729,14 +729,14 @@
             <span id="maint-saved-indicator" class="text-[10px] font-mono text-emerald-400">GUARDADO AUTOMÁTICO EN ESTE NAVEGADOR</span>
           </div>
 
-          <form onsubmit="saveMaintenanceQuickAdd(event)" class="grid sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs items-end">
+          <form onsubmit="saveMaintenanceQuickAdd(event)" novalidate class="grid sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs items-end">
             <label class="space-y-1">
               <span class="block text-gray-400">Legajo (opcional)</span>
               <input id="maint-quick-code" type="text" placeholder="Se genera solo" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Nombre y apellido *</span>
-              <input id="maint-quick-name" type="text" placeholder="Ej: Juan Pérez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+              <input id="maint-quick-name" type="text" placeholder="Ej: Juan Pérez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">DNI (opcional)</span>
@@ -744,7 +744,7 @@
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Puesto *</span>
-              <input id="maint-quick-role" type="text" placeholder="Ej: Mecánico" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+              <input id="maint-quick-role" type="text" placeholder="Ej: Mecánico" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Área / empresa</span>
@@ -754,6 +754,7 @@
               Guardar persona
             </button>
           </form>
+          <p id="maint-quick-error" class="hidden text-[11px] font-mono text-red-400"></p>
 
           <details class="border border-darkBorder rounded-xl p-3 bg-black/40">
             <summary class="cursor-pointer text-xs text-gray-300 font-semibold">Cargar varias personas de una vez (copiar y pegar la lista)</summary>
@@ -775,7 +776,7 @@
         </div>
 
         <!-- Registro de egreso -->
-        <form onsubmit="registerMaintenanceExit(event)" class="glass-card p-5 rounded-2xl space-y-4 border border-darkBorder">
+        <form onsubmit="registerMaintenanceExit(event)" novalidate class="glass-card p-5 rounded-2xl space-y-4 border border-darkBorder">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-darkBorder pb-3">
             <h4 class="text-sm font-bold text-white flex items-center gap-2">
               <i class="ph-bold ph-sign-out"></i> Registrar Egreso
@@ -785,17 +786,17 @@
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
             <label class="space-y-1">
               <span class="block text-gray-400">Personal activo</span>
-              <select id="maint-exit-code" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required>
+              <select id="maint-exit-code" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white">
                 <option value="">Selecciona al personal</option>
               </select>
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Fecha de egreso</span>
-              <input id="maint-exit-date" type="date" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+              <input id="maint-exit-date" type="date" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Motivo del egreso</span>
-              <input id="maint-exit-reason" type="text" maxlength="160" placeholder="Ej.: Fin del período de capacitación" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+              <input id="maint-exit-reason" type="text" maxlength="160" placeholder="Ej.: Fin del período de capacitación" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Observaciones</span>
@@ -1045,19 +1046,20 @@
         <h3 class="text-base font-bold text-white uppercase">Agregar Nueva Herramienta</h3>
         <button onclick="closeAddToolModal()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
       </div>
-      <form onsubmit="saveNewTool(event)" class="space-y-3 text-xs">
+      <form onsubmit="saveNewTool(event)" novalidate class="space-y-3 text-xs">
         <div>
-          <label class="block text-gray-400 font-mono mb-1">CÓDIGO / BARRAS</label>
-          <input type="text" id="new-tool-code" placeholder="Ej: HER-005" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">CÓDIGO / BARRAS (opcional)</label>
+          <input type="text" id="new-tool-code" placeholder="Ej: HER-005 (se genera solo)" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
         <div>
-          <label class="block text-gray-400 font-mono mb-1">NOMBRE / DESCRIPCIÓN</label>
-          <input type="text" id="new-tool-name" placeholder="Ej: Amoladora Angular 7 pulgadas" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">NOMBRE / DESCRIPCIÓN *</label>
+          <input type="text" id="new-tool-name" placeholder="Ej: Amoladora Angular 7 pulgadas" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
         <div>
-          <label class="block text-gray-400 font-mono mb-1">CATEGORÍA</label>
-          <input type="text" id="new-tool-cat" placeholder="Ej: Eléctricas" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">CATEGORÍA *</label>
+          <input type="text" id="new-tool-cat" placeholder="Ej: Eléctricas" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
+        <p id="new-tool-error" class="hidden text-[11px] font-mono text-red-400"></p>
         <div class="pt-2 flex justify-end gap-2">
           <button type="button" onclick="closeAddToolModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancelar</button>
           <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-gray-200">Guardar</button>
@@ -1073,23 +1075,24 @@
         <h3 class="text-base font-bold text-white uppercase">Agregar Nuevo Empleado</h3>
         <button onclick="closeAddEmployeeModal()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
       </div>
-      <form onsubmit="saveNewEmployee(event)" class="space-y-3 text-xs">
+      <form onsubmit="saveNewEmployee(event)" novalidate class="space-y-3 text-xs">
         <div>
-          <label class="block text-gray-400 font-mono mb-1">CÓDIGO / LEGAJO</label>
-          <input type="text" id="new-emp-code" placeholder="Ej: EMP-103" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">CÓDIGO / LEGAJO (opcional)</label>
+          <input type="text" id="new-emp-code" placeholder="Ej: EMP-103 (se genera solo)" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
         <div>
-          <label class="block text-gray-400 font-mono mb-1">NOMBRE Y APELLIDO</label>
-          <input type="text" id="new-emp-name" placeholder="Ej: Carlos Rodríguez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">NOMBRE Y APELLIDO *</label>
+          <input type="text" id="new-emp-name" placeholder="Ej: Carlos Rodríguez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
         <div>
-          <label class="block text-gray-400 font-mono mb-1">DNI</label>
-          <input type="text" id="new-emp-dni" placeholder="Ej: 38123456" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">DNI (opcional)</label>
+          <input type="text" id="new-emp-dni" placeholder="Ej: 38123456" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
         <div>
-          <label class="block text-gray-400 font-mono mb-1">PUESTO / ROL</label>
-          <input type="text" id="new-emp-role" placeholder="Ej: Pañolero / Operario" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">PUESTO / ROL *</label>
+          <input type="text" id="new-emp-role" placeholder="Ej: Pañolero / Operario" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
+        <p id="new-emp-error" class="hidden text-[11px] font-mono text-red-400"></p>
         <div class="pt-2 flex justify-end gap-2">
           <button type="button" onclick="closeAddEmployeeModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancelar</button>
           <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-gray-200">Guardar</button>
@@ -1106,35 +1109,37 @@
         <h3 class="text-base font-bold text-white uppercase">Registrar Personal de Mantenimiento</h3>
         <button onclick="closeAddMaintenanceModal()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
       </div>
-      <form onsubmit="saveNewMaintenancePerson(event)" class="space-y-3 text-xs">
+      <form onsubmit="saveNewMaintenancePerson(event)" novalidate class="space-y-3 text-xs">
         <div class="grid sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-gray-400 font-mono mb-1">LEGAJO / CÓDIGO</label>
-            <input type="text" id="new-maint-code" placeholder="Ej: MNT-001" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            <label class="block text-gray-400 font-mono mb-1">LEGAJO / CÓDIGO (opcional)</label>
+            <input type="text" id="new-maint-code" placeholder="Se genera solo (MNT-001)" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
+            <span class="block text-[10px] text-gray-500 font-mono mt-1">Si lo dejás vacío se genera el siguiente legajo libre.</span>
           </div>
           <div>
-            <label class="block text-gray-400 font-mono mb-1">DNI</label>
-            <input type="text" id="new-maint-dni" placeholder="Ej: 38123456" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            <label class="block text-gray-400 font-mono mb-1">DNI (opcional)</label>
+            <input type="text" id="new-maint-dni" placeholder="Ej: 38123456" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
           </div>
         </div>
         <div>
-          <label class="block text-gray-400 font-mono mb-1">NOMBRE Y APELLIDO</label>
-          <input type="text" id="new-maint-name" placeholder="Ej: Juan Pérez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+          <label class="block text-gray-400 font-mono mb-1">NOMBRE Y APELLIDO *</label>
+          <input type="text" id="new-maint-name" placeholder="Ej: Juan Pérez" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
         <div class="grid sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-gray-400 font-mono mb-1">PUESTO / ROL</label>
-            <input type="text" id="new-maint-role" placeholder="Ej: Mecánico" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            <label class="block text-gray-400 font-mono mb-1">PUESTO / ROL *</label>
+            <input type="text" id="new-maint-role" placeholder="Ej: Mecánico" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
           </div>
           <div>
-            <label class="block text-gray-400 font-mono mb-1">ÁREA / EMPRESA</label>
-            <input type="text" id="new-maint-area" placeholder="Ej: Grupo Falmet" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            <label class="block text-gray-400 font-mono mb-1">ÁREA / EMPRESA (opcional)</label>
+            <input type="text" id="new-maint-area" placeholder="Ej: Grupo Falmet" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
           </div>
         </div>
         <div>
           <label class="block text-gray-400 font-mono mb-1">FECHA DE INGRESO</label>
           <input type="date" id="new-maint-entry-date" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" />
         </div>
+        <p id="new-maint-error" class="hidden text-[11px] font-mono text-red-400"></p>
         <div class="pt-2 flex justify-end gap-2">
           <button type="button" onclick="closeAddMaintenanceModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancelar</button>
           <button type="submit" class="bg-white text-black font-bold px-4 py-2 rounded-lg hover:bg-gray-200">Guardar</button>
@@ -1895,26 +1900,34 @@
       indicator.innerText = `GUARDADO AUTOMÁTICO · ${time}`;
     }
 
+    function setInlineError(id, message) {
+      const element = document.getElementById(id);
+      if (!element) return;
+      element.innerText = message || '';
+      element.classList.toggle('hidden', !message);
+    }
+
     function saveMaintenanceQuickAdd(event) {
       event.preventDefault();
+      setInlineError('maint-quick-error', '');
       const name = document.getElementById('maint-quick-name').value.trim();
       const role = document.getElementById('maint-quick-role').value.trim();
       if (!name || !role) {
-        showToast('Completá el nombre y el puesto de la persona.', 'error');
+        const message = 'Completá el nombre y el puesto de la persona.';
+        setInlineError('maint-quick-error', message);
+        showToast(message, 'error');
         return;
       }
 
       const manualCode = document.getElementById('maint-quick-code').value.trim().toUpperCase();
       const code = manualCode || generateMaintenanceCode(state.maintenanceStaff.map(person => person.code));
       if (state.maintenanceStaff.some(person => person.code === code)) {
-        showToast(`El legajo ${code} ya está registrado.`, 'error');
+        const message = `El legajo ${code} ya está registrado.`;
+        setInlineError('maint-quick-error', message);
+        showToast(message, 'error');
         return;
       }
       const duplicate = findMaintenanceByName(name);
-      if (duplicate) {
-        showToast(`Ya hay alguien con ese nombre (legajo ${duplicate.code}).`, 'error');
-        return;
-      }
 
       const person = normalizeMaintenanceRecord({
         code,
@@ -1932,7 +1945,8 @@
       markMaintenanceSaved();
       event.target.reset();
       renderAll();
-      showToast(`${name} quedó registrada y guardada (${code}).`, 'success');
+      const warning = duplicate ? ` Ojo: ya existe ${duplicate.name} (legajo ${duplicate.code}).` : '';
+      showToast(`${name} quedó registrada y guardada (${code}).${warning}`, 'success');
     }
 
     function saveMaintenanceBulk() {
@@ -2087,7 +2101,14 @@
       modal.classList.remove('hidden');
       const entryDate = document.getElementById('new-maint-entry-date');
       if (entryDate) entryDate.value = new Date().toISOString().slice(0, 10);
-      document.getElementById('new-maint-code').focus();
+      const codeInput = document.getElementById('new-maint-code');
+      if (codeInput && !codeInput.value) {
+        codeInput.placeholder = `Se genera solo (${generateMaintenanceCode(state.maintenanceStaff.map(person => person.code))})`;
+      }
+      const areaInput = document.getElementById('new-maint-area');
+      if (areaInput && !areaInput.value) areaInput.value = 'Grupo Falmet';
+      setInlineError('new-maint-error', '');
+      document.getElementById('new-maint-name').focus();
     }
 
     function closeAddMaintenanceModal() {
@@ -2096,21 +2117,29 @@
 
     function saveNewMaintenancePerson(event) {
       event.preventDefault();
-      const code = document.getElementById('new-maint-code').value.trim().toUpperCase();
+      setInlineError('new-maint-error', '');
+      const manualCode = document.getElementById('new-maint-code').value.trim().toUpperCase();
       const name = document.getElementById('new-maint-name').value.trim();
       const dni = document.getElementById('new-maint-dni').value.trim();
       const role = document.getElementById('new-maint-role').value.trim();
       const area = document.getElementById('new-maint-area').value.trim();
       const entryDate = document.getElementById('new-maint-entry-date').value;
 
-      if (!code || !name) {
-        showToast('Completá el legajo y el nombre del personal.', 'error');
+      if (!name || !role) {
+        const message = 'Completá el nombre y el puesto de la persona.';
+        setInlineError('new-maint-error', message);
+        showToast(message, 'error');
         return;
       }
+
+      const code = manualCode || generateMaintenanceCode(state.maintenanceStaff.map(person => person.code));
       if (state.maintenanceStaff.some(person => person.code === code)) {
-        showToast('El legajo ya está registrado en el padrón de mantenimiento.', 'error');
+        const message = `El legajo ${code} ya está registrado en el padrón de mantenimiento.`;
+        setInlineError('new-maint-error', message);
+        showToast(message, 'error');
         return;
       }
+      const duplicate = findMaintenanceByName(name);
 
       const person = normalizeMaintenanceRecord({
         code, name, dni, role, area, entryDate,
@@ -2127,8 +2156,9 @@
       closeAddMaintenanceModal();
       markMaintenanceSaved();
       renderAll();
-      showToast(`${name} quedó registrado en el padrón de mantenimiento.`, 'success');
       event.target.reset();
+      const warning = duplicate ? ` Ojo: ya existe ${duplicate.name} (legajo ${duplicate.code}).` : '';
+      showToast(`${name} quedó registrada y guardada (${code}).${warning}`, 'success');
     }
 
     /* ================= TERMINAL SCANNER LOGIC ================= */
@@ -2364,19 +2394,72 @@
     }
 
     /* ================= MODALS & FORMS ================= */
-    function openAddToolModal() { document.getElementById('modal-add-tool').classList.remove('hidden'); }
+    function openAddToolModal() {
+      document.getElementById('modal-add-tool').classList.remove('hidden');
+      const codeInput = document.getElementById('new-tool-code');
+      if (codeInput && !codeInput.value) {
+        codeInput.placeholder = `Ej: ${generateToolCode(state.tools.map(tool => tool.code))} (se genera solo)`;
+      }
+      setInlineError('new-tool-error', '');
+    }
     function closeAddToolModal() { document.getElementById('modal-add-tool').classList.add('hidden'); }
-    function openAddEmployeeModal() { document.getElementById('modal-add-employee').classList.remove('hidden'); }
+    function openAddEmployeeModal() {
+      document.getElementById('modal-add-employee').classList.remove('hidden');
+      const codeInput = document.getElementById('new-emp-code');
+      if (codeInput && !codeInput.value) {
+        codeInput.placeholder = `Ej: ${generateEmployeeCode(state.employees.map(employee => employee.code))} (se genera solo)`;
+      }
+      setInlineError('new-emp-error', '');
+    }
     function closeAddEmployeeModal() { document.getElementById('modal-add-employee').classList.add('hidden'); }
+
+    function generateToolCode(usedCodes) {
+      const codes = Array.isArray(usedCodes) ? [...usedCodes] : [...(usedCodes || [])];
+      const numbers = codes
+        .map(code => Number((String(code).match(/(\d+)\s*$/) || [])[1]))
+        .filter(Number.isFinite);
+      let next = (numbers.length ? Math.max(...numbers) : 0) + 1;
+      let candidate = `HER-${String(next).padStart(3, '0')}`;
+      while (codes.includes(candidate)) {
+        next += 1;
+        candidate = `HER-${String(next).padStart(3, '0')}`;
+      }
+      return candidate;
+    }
+
+    function generateEmployeeCode(usedCodes) {
+      const codes = Array.isArray(usedCodes) ? [...usedCodes] : [...(usedCodes || [])];
+      const numbers = codes
+        .map(code => Number((String(code).match(/(\d+)\s*$/) || [])[1]))
+        .filter(Number.isFinite);
+      let next = numbers.length ? Math.max(...numbers) + 1 : 101;
+      let candidate = `EMP-${next}`;
+      while (codes.includes(candidate)) {
+        next += 1;
+        candidate = `EMP-${next}`;
+      }
+      return candidate;
+    }
 
     function saveNewTool(e) {
       e.preventDefault();
-      const code = document.getElementById('new-tool-code').value.trim().toUpperCase();
+      setInlineError('new-tool-error', '');
+      const manualCode = document.getElementById('new-tool-code').value.trim().toUpperCase();
       const name = document.getElementById('new-tool-name').value.trim();
       const category = document.getElementById('new-tool-cat').value.trim();
 
+      if (!name || !category) {
+        const message = 'Completá el nombre y la categoría de la herramienta.';
+        setInlineError('new-tool-error', message);
+        showToast(message, 'error');
+        return;
+      }
+
+      const code = manualCode || generateToolCode(state.tools.map(tool => tool.code));
       if (state.tools.some(t => t.code === code)) {
-        showToast('El código de herramienta ya existe', 'error');
+        const message = 'El código de herramienta ya existe';
+        setInlineError('new-tool-error', message);
+        showToast(message, 'error');
         return;
       }
 
@@ -2394,13 +2477,24 @@
 
     function saveNewEmployee(e) {
       e.preventDefault();
-      const code = document.getElementById('new-emp-code').value.trim().toUpperCase();
+      setInlineError('new-emp-error', '');
+      const manualCode = document.getElementById('new-emp-code').value.trim().toUpperCase();
       const name = document.getElementById('new-emp-name').value.trim();
       const dni = document.getElementById('new-emp-dni').value.trim();
       const role = document.getElementById('new-emp-role').value.trim();
 
+      if (!name || !role) {
+        const message = 'Completá el nombre y el puesto del empleado.';
+        setInlineError('new-emp-error', message);
+        showToast(message, 'error');
+        return;
+      }
+
+      const code = manualCode || generateEmployeeCode(state.employees.map(employee => employee.code));
       if (state.employees.some(emp => emp.code === code)) {
-        showToast('El legajo/código de empleado ya existe', 'error');
+        const message = 'El legajo/código de empleado ya existe';
+        setInlineError('new-emp-error', message);
+        showToast(message, 'error');
         return;
       }
 
