@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- SheetJS for real Excel importing and exporting -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -79,6 +81,181 @@
       50% { top: 85%; opacity: 0.9; }
       100% { top: 10%; opacity: 0.2; }
     }
+
+    /* ===== Kiosk Welcome / Scan Flow (estilo Lotus) ===== */
+    .kiosk-fade-in {
+      animation: kioskFadeIn 0.6s ease-out both;
+    }
+    @keyframes kioskFadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .kiosk-ring {
+      animation: kioskRing 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    @keyframes kioskRing {
+      0% { transform: scale(0.75); opacity: 0.7; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    .kiosk-idle-pulse {
+      animation: kioskIdlePulse 3s ease-in-out infinite;
+    }
+    @keyframes kioskIdlePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.12); }
+      50% { transform: scale(1.04); box-shadow: 0 0 40px 6px rgba(255,255,255,0.08); }
+    }
+    .kiosk-card-dip {
+      animation: kioskCardDip 0.5s ease-out both;
+    }
+    @keyframes kioskCardDip {
+      0% { transform: scale(1) translateY(0); }
+      35% { transform: scale(0.9) translateY(6px); }
+      70% { transform: scale(1.06) translateY(-3px); }
+      100% { transform: scale(1) translateY(0); }
+    }
+    .kiosk-sonar {
+      animation: kioskSonar 0.8s cubic-bezier(0, 0.2, 0.8, 1) forwards;
+    }
+    @keyframes kioskSonar {
+      0% { transform: scale(0.8); opacity: 0.95; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    .kiosk-option {
+      opacity: 0;
+      animation: kioskOptionIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .kiosk-option:nth-child(1) { animation-delay: 0.05s; }
+    .kiosk-option:nth-child(2) { animation-delay: 0.18s; }
+    .kiosk-option:nth-child(3) { animation-delay: 0.31s; }
+    @keyframes kioskOptionIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .kiosk-check {
+      stroke-dasharray: 60;
+      stroke-dashoffset: 60;
+      animation: kioskDraw 0.5s cubic-bezier(0.65, 0, 0.45, 1) forwards 0.1s;
+    }
+    @keyframes kioskDraw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ===== Micro-interacciones y entrada fluida (paleta intacta) ===== */
+    @keyframes kioskRise {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); filter: blur(4px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    .kiosk-rise {
+      animation: kioskRise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-delay: var(--stagger-delay, 0ms);
+    }
+    @keyframes kioskHomeSweep {
+      0% { transform: translateY(0); opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { transform: translateY(148px); opacity: 0; }
+    }
+    .kiosk-scan-sweep {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 6px;
+      height: 2px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);
+      box-shadow: 0 0 12px rgba(255,255,255,0.45);
+      pointer-events: none;
+      animation: kioskHomeSweep 2.6s ease-in-out infinite;
+    }
+    @keyframes kioskPrimaryGlow {
+      0%, 100% { box-shadow: 0 10px 24px -12px rgba(255,255,255,0.5); }
+      50% { box-shadow: 0 0 0 6px rgba(255,255,255,0.06), 0 14px 30px -10px rgba(255,255,255,0.45); }
+    }
+    .kiosk-primary-pulse {
+      animation: kioskPrimaryGlow 3.2s ease-in-out infinite;
+    }
+    @keyframes kioskCodeReveal {
+      from { opacity: 0; transform: translateY(6px); filter: blur(6px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    .code-reveal {
+      animation: kioskCodeReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .code-skeleton {
+      display: inline-block;
+      width: 4.5rem;
+      height: 0.55rem;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #2a2a2a 25%, #454545 50%, #2a2a2a 75%);
+      background-size: 200% 100%;
+      animation: kioskSkeleton 0.9s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes kioskSkeleton {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+    @keyframes kioskOptionsExpand {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .kiosk-options-expand {
+      animation: kioskOptionsExpand 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .kiosk-option:nth-child(4) { animation-delay: 0.42s; }
+
+    @keyframes kioskLaserSweep {
+      0% { transform: translateY(6px); opacity: 0.35; }
+      50% { opacity: 1; }
+      100% { transform: translateY(146px); opacity: 0.35; }
+    }
+    .kiosk-laser-line {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 0;
+      height: 2px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, transparent, #34d399, #ffffff, #34d399, transparent);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.95), 0 0 20px rgba(52, 211, 153, 0.6);
+      animation: kioskLaserSweep 2s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes kioskManualIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .kiosk-manual-in {
+      animation: kioskManualIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both 0.25s;
+    }
+    @keyframes kioskManualFlash {
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0); background-color: rgba(255,255,255,0); }
+      35% { box-shadow: 0 0 0 2px rgba(255,255,255,0.22), 0 0 28px rgba(255,255,255,0.08); background-color: rgba(255,255,255,0.05); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); background-color: rgba(255,255,255,0); }
+    }
+    .kiosk-manual-flash {
+      animation: kioskManualFlash 0.8s ease-out;
+      border-radius: 1rem;
+    }
+    @keyframes kioskStatusPop {
+      from { opacity: 0.25; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .kiosk-status-pop {
+      animation: kioskStatusPop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .kiosk-fade-in, .kiosk-ring, .kiosk-idle-pulse, .kiosk-card-dip,
+      .kiosk-sonar, .kiosk-option, .kiosk-rise, .kiosk-scan-sweep,
+      .kiosk-primary-pulse, .code-reveal, .kiosk-options-expand,
+      .kiosk-laser-line, .kiosk-manual-in, .kiosk-manual-flash,
+      .kiosk-status-pop {
+        animation: none !important;
+      }
+      .kiosk-option, .kiosk-rise, .kiosk-manual-in { opacity: 1 !important; }
+    }
   </style>
 </head>
 <body class="bg-black text-lightText font-sans antialiased min-h-screen flex flex-col selection:bg-white selection:text-black">
@@ -88,7 +265,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
       <!-- Logo -->
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('landing')">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('terminal')">
         <div class="w-9 h-9 bg-white text-black font-black flex items-center justify-center rounded-lg text-lg tracking-tighter shadow-lg shadow-white/10">
           S
         </div>
@@ -102,11 +279,11 @@
 
       <!-- Desktop Navigation Tabs -->
       <nav class="hidden md:flex items-center space-x-1 bg-darkCard p-1 rounded-xl border border-darkBorder">
-        <button onclick="switchTab('landing')" id="nav-landing" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-white bg-white/10">
-          Landing & Planes
-        </button>
-        <button onclick="switchTab('terminal')" id="nav-terminal" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all">
+        <button onclick="switchTab('terminal')" id="nav-terminal" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-white bg-white/10">
           Terminal Escáner
+        </button>
+        <button onclick="switchTab('planes')" id="nav-planes" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all">
+          Planes
         </button>
         <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-all">
           Panel Admin
@@ -134,8 +311,8 @@
 
     <!-- Mobile Dropdown Nav -->
     <div id="mobile-nav" class="hidden md:hidden border-t border-darkBorder bg-darkCard px-4 py-3 space-y-2">
-      <button onclick="switchTab('landing'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Landing & Planes</button>
       <button onclick="switchTab('terminal'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Terminal Escáner</button>
+      <button onclick="switchTab('planes'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Planes</button>
       <button onclick="switchTab('admin'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Panel Admin</button>
       <button onclick="switchTab('portal'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Portal Empleado</button>
       <button onclick="switchTab('excel'); toggleMobileNav()" class="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 rounded-lg">Integración Excel</button>
@@ -164,32 +341,27 @@
   <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- 1. LANDING & PLANES SECTION -->
-    <section id="tab-landing" class="space-y-16 py-4">
-      <!-- Hero Banner -->
-      <div class="text-center space-y-6 max-w-4xl mx-auto pt-8">
+    <!-- PLANES + ¿QUÉ ES JACK SOLUTIONS? -->
+    <section id="tab-planes" class="hidden space-y-12 py-4">
+      <!-- Descripción del producto -->
+      <div class="text-center space-y-6 max-w-4xl mx-auto pt-6">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
           <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-          TECNOLOGÍA INDUSTRIAL MONOCROMÁTICA
+          PROYECTO JACK SOLUTIONS
         </div>
-        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white uppercase leading-none">
-          Control Total de Pañol y Asistencia
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white uppercase leading-none">
+          ¿Qué es JACK SOLUTIONS?
         </h1>
-        <p class="text-gray-400 text-sm sm:text-lg max-w-2xl mx-auto font-normal">
-          Plataforma avanzada desarrollada por <strong class="text-white">S.I.T.E.C</strong> para el <strong class="text-white">Proyecto JACK SOLUTIONS</strong>. Gestión simplificada por código de barras, NFC y sincronización directa con Excel.
+        <p class="text-gray-400 text-sm sm:text-lg max-w-3xl mx-auto font-normal">
+          <strong class="text-white">JACK SOLUTIONS</strong> es la plataforma de <strong class="text-white">S.I.T.E.C</strong> para digitalizar el control de pañol, la asistencia del personal, la flota de vehículos y el mantenimiento. Todo se gestiona con lector de código de barras, NFC y sincronización directa con Excel.
         </p>
-        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-          <button onclick="switchTab('terminal')" class="bg-white text-black hover:bg-gray-200 font-bold px-6 py-3 rounded-xl text-sm transition-all shadow-lg flex items-center gap-2">
-            <i class="ph-bold ph-barcode text-lg"></i> Abrir Terminal de Escaneo
-          </button>
-          <button onclick="switchTab('admin')" class="border border-darkBorder hover:border-white/50 bg-darkCard text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all">
-            Ver Panel Admin
-          </button>
-        </div>
+        <p class="text-gray-500 text-xs sm:text-sm max-w-2xl mx-auto font-mono uppercase tracking-widest">
+          Un solo sistema · Menos planillas · Control en tiempo real
+        </p>
       </div>
 
       <!-- Feature Grid -->
-      <div class="grid md:grid-cols-3 gap-6">
+      <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         <div class="glass-card p-6 rounded-2xl space-y-3">
           <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white text-xl">
             <i class="ph-bold ph-qr-code"></i>
@@ -221,180 +393,258 @@
         </div>
       </div>
 
-      <!-- Planes Comparativos -->
-      <div class="space-y-8 pt-6">
-        <div class="text-center space-y-2">
-          <h2 class="text-2xl font-bold tracking-tight text-white uppercase">Membresías & Planes JACK SOLUTIONS</h2>
-          <p class="text-xs text-gray-400">Selecciona el nivel de integración adecuado para tu planta o taller</p>
+      <div class="text-center space-y-2 pt-4">
+        <h2 class="text-2xl font-bold tracking-tight text-white uppercase">Membresías & Planes JACK SOLUTIONS</h2>
+        <p class="text-xs text-gray-400">Selecciona el nivel de integración adecuado para tu planta o taller</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Plan Estándar -->
+        <div class="glass-card p-8 rounded-2xl border border-darkBorder flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono text-gray-400 tracking-wider">ENTRADA DE GAMA</span>
+              <span class="text-xs bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded">NO PREMIUM</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Plan Estándar</h3>
+            <p class="text-xs text-gray-400">Para talleres o depósitos que operan mediante código de barras y QR tradicional.</p>
+            <div class="text-3xl font-extrabold text-white font-mono">$0 <span class="text-xs text-gray-500 font-normal">/ mes (Incluso en local)</span></div>
+            
+            <ul class="space-y-3 pt-2 text-xs text-gray-300">
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Escáner por Código de Barras y QR</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Registro de Entradas y Salidas de Pañol</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Fichaje de Asistencia de Personal</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Exportaciones a Excel y CSV</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Asistente Bot Básico Integrado</li>
+              <li class="flex items-center gap-2 text-gray-600 line-through"><i class="ph-bold ph-x"></i> Lector NFC en Lote Automatizado</li>
+              <li class="flex items-center gap-2 text-gray-600 line-through"><i class="ph-bold ph-x"></i> Firma Digital de Recepción</li>
+            </ul>
+          </div>
+          <button onclick="switchTab('terminal')" class="w-full bg-transparent hover:bg-white/5 border border-darkBorder hover:border-white text-white font-semibold py-2.5 rounded-xl text-xs transition-all">
+            Usar Versión Estándar
+          </button>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <!-- Plan Estándar -->
-          <div class="glass-card p-8 rounded-2xl border border-darkBorder flex flex-col justify-between space-y-6">
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-mono text-gray-400 tracking-wider">ENTRADA DE GAMA</span>
-                <span class="text-xs bg-white/5 border border-white/10 text-gray-300 px-2 py-0.5 rounded">NO PREMIUM</span>
-              </div>
-              <h3 class="text-2xl font-bold text-white">Plan Estándar</h3>
-              <p class="text-xs text-gray-400">Para talleres o depósitos que operan mediante código de barras y QR tradicional.</p>
-              <div class="text-3xl font-extrabold text-white font-mono">$0 <span class="text-xs text-gray-500 font-normal">/ mes (Incluso en local)</span></div>
-              
-              <ul class="space-y-3 pt-2 text-xs text-gray-300">
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Escáner por Código de Barras y QR</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Registro de Entradas y Salidas de Pañol</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Fichaje de Asistencia de Personal</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Exportaciones a Excel y CSV</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check text-white"></i> Asistente Bot Básico Integrado</li>
-                <li class="flex items-center gap-2 text-gray-600 line-through"><i class="ph-bold ph-x"></i> Lector NFC en Lote Automatizado</li>
-                <li class="flex items-center gap-2 text-gray-600 line-through"><i class="ph-bold ph-x"></i> Firma Digital de Recepción</li>
-              </ul>
+        <!-- Plan Premium -->
+        <div class="glass-card p-8 rounded-2xl border-2 border-white flex flex-col justify-between space-y-6 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-28 h-28 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono text-white tracking-wider font-bold">RECOMENDADO INDUSTRIAL</span>
+              <span class="text-xs bg-white text-black font-bold px-2.5 py-0.5 rounded">PREMIUM NFC</span>
             </div>
-            <button onclick="switchTab('terminal')" class="w-full bg-transparent hover:bg-white/5 border border-darkBorder hover:border-white text-white font-semibold py-2.5 rounded-xl text-xs transition-all">
-              Usar Versión Estándar
-            </button>
+            <h3 class="text-2xl font-bold text-white">Plan Premium NFC</h3>
+            <p class="text-xs text-gray-400">Máxima velocidad con lectura NFC sin contacto, auditoría y firmas digitales.</p>
+            <div class="text-3xl font-extrabold text-white font-mono">$199 <span class="text-xs text-gray-500 font-normal">/ mes</span></div>
+            
+            <ul class="space-y-3 pt-2 text-xs text-gray-200">
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> <strong>Todo lo del Plan Estándar incluido</strong></li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Lectura e identificación por NFC ultrarrápida</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Sincronización en tiempo real con Google Sheets / Excel Online</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Captura de Firma Digital de recepción en pantalla</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Alertas automáticas de mantenimiento preventivo</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Soporte prioritario 24/7 directo con S.I.T.E.C</li>
+            </ul>
           </div>
-
-          <!-- Plan Premium -->
-          <div class="glass-card p-8 rounded-2xl border-2 border-white flex flex-col justify-between space-y-6 relative overflow-hidden">
-            <div class="absolute -right-12 -top-12 w-28 h-28 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-mono text-white tracking-wider font-bold">RECOMENDADO INDUSTRIAL</span>
-                <span class="text-xs bg-white text-black font-bold px-2.5 py-0.5 rounded">PREMIUM NFC</span>
-              </div>
-              <h3 class="text-2xl font-bold text-white">Plan Premium NFC</h3>
-              <p class="text-xs text-gray-400">Máxima velocidad con lectura NFC sin contacto, auditoría y firmas digitales.</p>
-              <div class="text-3xl font-extrabold text-white font-mono">$199 <span class="text-xs text-gray-500 font-normal">/ mes</span></div>
-              
-              <ul class="space-y-3 pt-2 text-xs text-gray-200">
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> <strong>Todo lo del Plan Estándar incluido</strong></li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Lectura e identificación por NFC ultrarrápida</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Sincronización en tiempo real con Google Sheets / Excel Online</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Captura de Firma Digital de recepción en pantalla</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Alertas automáticas de mantenimiento preventivo</li>
-                <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-white text-sm"></i> Soporte prioritario 24/7 directo con S.I.T.E.C</li>
-              </ul>
-            </div>
-            <button onclick="showToast('Solicitud de Plan Premium NFC enviada a S.I.T.E.C', 'info')" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-2.5 rounded-xl text-xs transition-all shadow-lg">
-              Activar Plan Premium NFC
-            </button>
-          </div>
+          <button onclick="showToast('Solicitud de Plan Premium NFC enviada a S.I.T.E.C', 'info')" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-2.5 rounded-xl text-xs transition-all shadow-lg">
+            Activar Plan Premium NFC
+          </button>
         </div>
       </div>
     </section>
 
 
     <!-- 2. TERMINAL ESCÁNER (PAÑOL & FICHAJE) -->
-    <section id="tab-terminal" class="hidden space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-darkBorder pb-4">
-        <div>
-          <h2 class="text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-2">
-            <i class="ph-bold ph-barcode"></i> Terminal Operativa de Escaneo
-          </h2>
-          <p class="text-xs text-gray-400">Módulo rápido para pañoleros y fichaje de personal en planta</p>
+    <section id="tab-terminal" class="min-h-[80vh] flex flex-col items-center justify-center py-6">
+      <!-- Input oculto para lectores USB que tipean automáticamente -->
+      <input type="text" id="scan-input" class="opacity-0 absolute -top-96 pointer-events-none" autocomplete="off" aria-hidden="true" />
+
+      <!-- ============ FASE 1: ESPERA (ESCANEO) ============ -->
+      <div id="kiosk-scan-phase" class="w-full flex flex-col items-center text-center kiosk-fade-in">
+        <div class="kiosk-rise inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono text-gray-300 uppercase tracking-widest mb-8" style="--stagger-delay: 0ms;">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Lector USB / Cámara listo
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            LECTOR USB / CÁMARA LISTO
-          </span>
+
+        <!-- Zona de escaneo con aros pulsantes -->
+        <div id="kiosk-scan-area" onclick="simulateKioskScan()" title="Hacé clic para simular la lectura"
+             class="kiosk-rise relative flex items-center justify-center cursor-pointer mb-10 group" style="--stagger-delay: 80ms;">
+          <span class="kiosk-ring absolute w-56 h-56 rounded-full border-2 border-white/20"></span>
+          <span class="kiosk-ring absolute w-56 h-56 rounded-full border border-white/10" style="animation-delay: 1.2s;"></span>
+          <span id="kiosk-sonar" class="absolute w-56 h-56 rounded-full border-4 border-white opacity-0 pointer-events-none"></span>
+
+          <div id="kiosk-card" class="relative w-44 h-44 overflow-hidden bg-darkCard border-2 border-darkBorder rounded-3xl flex flex-col items-center justify-center gap-3 kiosk-idle-pulse group-hover:border-white/60 transition-colors">
+            <span class="kiosk-scan-sweep" aria-hidden="true"></span>
+            <i class="ph-bold ph-identification-card text-white text-6xl"></i>
+            <span class="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Credencial</span>
+          </div>
+        </div>
+
+        <div class="kiosk-rise bg-darkCard px-8 py-5 rounded-2xl border border-darkBorder max-w-md w-full mb-6" style="--stagger-delay: 160ms;">
+          <p class="text-base md:text-lg font-medium text-white">
+            Apoyá tu <span class="font-bold">tarjeta o código</span> en el lector para fichar tu ingreso o egreso.
+          </p>
+        </div>
+
+        <div class="kiosk-rise flex flex-col items-center gap-3" style="--stagger-delay: 240ms;">
+          <button onclick="simulateKioskScan()" class="kiosk-primary-pulse inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black text-xs font-bold rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-105 active:scale-95 shadow-lg">
+            <i class="ph-bold ph-scan text-base"></i>
+            <span>Simular lectura de tarjeta</span>
+            <kbd class="font-mono bg-black/10 px-1.5 rounded text-[10px]">Enter ↵</kbd>
+          </button>
+          <div class="text-[11px] font-mono text-gray-500 space-x-3">
+            <span>Códigos demo:</span>
+            <button onclick="simulateKioskScan('EMP-101')" class="text-gray-300 hover:text-white underline underline-offset-2 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-105 active:scale-95">EMP-101</button>
+            <button onclick="simulateKioskScan('HER-001')" class="text-gray-300 hover:text-white underline underline-offset-2 transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-105 active:scale-95">HER-001</button>
+          </div>
         </div>
       </div>
 
-      <div class="grid lg:grid-cols-12 gap-6">
-        <!-- Area del Lector -->
-        <div class="lg:col-span-7 space-y-6">
-          <div class="glass-card p-6 rounded-2xl space-y-6 border border-darkBorder">
-            
-            <!-- Selector de Modo -->
-            <div class="grid grid-cols-2 gap-2 p-1 bg-black rounded-xl border border-darkBorder">
-              <button id="mode-tool" onclick="setTerminalMode('tool')" class="py-2 text-xs font-bold rounded-lg bg-white text-black transition-all">
-                <i class="ph-bold ph-wrench"></i> Herramientas / Pañol
-              </button>
-              <button id="mode-attendance" onclick="setTerminalMode('attendance')" class="py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all">
-                <i class="ph-bold ph-user-check"></i> Fichaje Personal
-              </button>
-            </div>
-
-            <!-- Visor del Escáner Simulado -->
-            <div class="relative bg-black rounded-xl border-2 border-dashed border-darkBorder p-8 text-center space-y-4 overflow-hidden min-h-[220px] flex flex-col items-center justify-center">
-              <div class="scanner-laser absolute w-full h-0.5 bg-white shadow-[0_0_15px_#ffffff]"></div>
-              
-              <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-white text-3xl border border-white/10">
-                <i class="ph-bold ph-scan"></i>
-              </div>
-              <div class="space-y-1">
-                <p class="text-sm font-semibold text-white">Escanee el Código de Barras o QR</p>
-                <p class="text-xs text-gray-500">Utilice la pistola lectora o escriba el código manualmente abajo</p>
+      <!-- ============ FASE 2: OPCIONES (OPERARIO) ============ -->
+      <div id="kiosk-options-phase" class="hidden w-full max-w-4xl flex-col items-center text-center">
+        <!-- Tarjeta de identificación del operario -->
+        <div class="w-full bg-darkCard rounded-2xl border border-darkBorder p-6 mb-10 relative overflow-hidden kiosk-option transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.01]">
+          <div class="absolute top-0 left-0 right-0 h-1.5 bg-white"></div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div id="kiosk-avatar" class="w-16 h-16 rounded-2xl bg-white text-black flex items-center justify-center font-black text-2xl flex-shrink-0">JP</div>
+              <div class="text-left">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] uppercase tracking-wider font-semibold text-gray-500">Credencial Operario</span>
+                  <span id="kiosk-op-code" class="text-[10px] font-mono text-gray-500">#EMP-101</span>
+                </div>
+                <h3 id="kiosk-op-name" class="font-bold text-2xl text-white leading-tight">Juan Pérez</h3>
+                <p id="kiosk-op-role" class="text-sm text-gray-400 font-medium">Operario de Planta</p>
               </div>
             </div>
-
-            <!-- Formulario de Entrada / Acción Manual -->
-            <form onsubmit="handleManualScan(event)" class="space-y-4">
-              <div>
-                <label class="block text-xs font-mono text-gray-400 uppercase mb-1">Código Identificador (ID / Barras)</label>
-                <div class="relative">
-                  <input type="text" id="scan-input" placeholder="Ej: HER-001 o EMP-101" class="w-full bg-black border border-darkBorder focus:border-white rounded-xl px-4 py-3 text-sm font-mono text-white outline-none transition-all pr-24" required />
-                  <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 bg-white text-black font-bold px-4 rounded-lg text-xs hover:bg-gray-200 transition-all">
-                    Procesar
-                  </button>
+            <div class="flex items-center gap-3">
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <span class="kiosk-sonar absolute inset-0 rounded-full border-4 border-emerald-400"></span>
+                <div class="w-12 h-12 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                  <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path class="kiosk-check" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                  </svg>
                 </div>
               </div>
-
-              <!-- Botones de Acción para Herramientas -->
-              <div id="tool-action-buttons" class="grid grid-cols-2 gap-3">
-                <button type="button" onclick="executeToolTransaction('OUT')" class="w-full bg-white text-black font-bold py-3 rounded-xl text-xs hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
-                  <i class="ph-bold ph-arrow-up-right"></i> Prestar / Salida
-                </button>
-                <button type="button" onclick="executeToolTransaction('IN')" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
-                  <i class="ph-bold ph-arrow-down-left"></i> Devolver / Entrada
-                </button>
-              </div>
-
-              <!-- Botones de Acción para Fichaje -->
-              <div id="attendance-action-buttons" class="grid grid-cols-2 gap-3 hidden">
-                <button type="button" onclick="executeAttendanceTransaction('ENTRY')" class="w-full bg-white text-black font-bold py-3 rounded-xl text-xs hover:bg-gray-200 transition-all flex items-center justify-center gap-2">
-                  <i class="ph-bold ph-sign-in"></i> Fichar INGRESO
-                </button>
-                <button type="button" onclick="executeAttendanceTransaction('EXIT')" class="w-full bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-3 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
-                  <i class="ph-bold ph-sign-out"></i> Fichar EGRESO
-                </button>
-              </div>
-            </form>
-
+              <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> <span id="kiosk-op-status">Habilitado</span>
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- Códigos de Prueba Rápidos & Últimos Movimientos -->
-        <div class="lg:col-span-5 space-y-6">
-          <!-- Accesos directos de prueba -->
-          <div class="glass-card p-5 rounded-2xl space-y-3">
-            <h3 class="text-xs font-mono uppercase text-gray-400 tracking-wider">Códigos Demo (Haz clic para probar)</h3>
-            <div class="flex flex-wrap gap-2">
-              <button onclick="fillScanInput('HER-001')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">HER-001 (Amoladora)</button>
-              <button onclick="fillScanInput('HER-002')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">HER-002 (Taladro)</button>
-              <button onclick="fillScanInput('EMP-101')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">EMP-101 (Juan Pérez)</button>
-              <button onclick="fillScanInput('EMP-102')" class="text-xs bg-white/5 border border-white/10 hover:border-white px-2.5 py-1 rounded font-mono text-gray-300">EMP-102 (María Gómez)</button>
-            </div>
-          </div>
+        <div class="mb-6 kiosk-option">
+          <h4 class="font-bold text-xl text-white tracking-tight">Seleccioná la operación a realizar</h4>
+          <p id="kiosk-options-subtitle" class="text-xs text-gray-500 mt-1">Elegí una opción para continuar</p>
+        </div>
 
-          <!-- Historial Reciente en Terminal -->
-          <div class="glass-card p-5 rounded-2xl space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="text-xs font-mono uppercase text-gray-400 tracking-wider">Últimos Registros del Turno</h3>
-              <i class="ph-bold ph-clock-counter-clockwise text-gray-500"></i>
+        <!-- Opciones grandes -->
+        <div class="grid sm:grid-cols-2 gap-6 w-full mb-8">
+          <button onclick="kioskGoToTools()" class="kiosk-option group relative overflow-hidden flex flex-col items-center justify-center p-10 bg-white text-black rounded-3xl shadow-xl transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:scale-105 active:translate-y-0 active:scale-95">
+            <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-black/5 to-transparent pointer-events-none"></div>
+            <div class="w-20 h-20 rounded-2xl bg-black/5 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+              <i class="ph-bold ph-toolbox text-4xl"></i>
             </div>
-            <div id="terminal-recent-logs" class="space-y-2 max-h-[260px] overflow-y-auto pr-1 text-xs">
-              <!-- Logs populated via JS -->
+            <span class="font-black text-2xl tracking-wide uppercase mb-1">Herramientas</span>
+            <span class="text-xs text-black/60 font-medium">Retiro y devolución de pañol</span>
+          </button>
+
+          <button onclick="kioskGoToVehicles()" class="kiosk-option group relative overflow-hidden flex flex-col items-center justify-center p-10 bg-white text-black rounded-3xl shadow-xl transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1.5 hover:scale-105 active:translate-y-0 active:scale-95">
+            <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-black/5 to-transparent pointer-events-none"></div>
+            <div class="w-20 h-20 rounded-2xl bg-black/5 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+              <i class="ph-bold ph-car text-4xl"></i>
+            </div>
+            <span class="font-black text-2xl tracking-wide uppercase mb-1">Vehículos</span>
+            <span class="text-xs text-black/60 font-medium">Asignación y devolución de autos</span>
+          </button>
+        </div>
+
+        <button onclick="kioskReset()" class="kiosk-option inline-flex items-center gap-2 text-xs text-gray-500 hover:text-white font-medium underline underline-offset-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-105 active:scale-95">
+          <i class="ph-bold ph-arrow-counter-clockwise"></i> Cerrar sesión / volver
+        </button>
+      </div>
+
+      <!-- ============ FASE 3: PANELES DE OPERACIÓN ============ -->
+      <div id="kiosk-action-phase" class="hidden w-full max-w-2xl flex-col items-center text-center">
+        <!-- Panel de operaciones de HERRAMIENTAS -->
+        <div id="kiosk-tools-panel" class="hidden w-full kiosk-fade-in">
+          <div class="glass-card p-6 rounded-2xl border border-darkBorder space-y-5">
+            <div class="flex items-center gap-2 text-white font-bold uppercase tracking-wide text-sm justify-center">
+              <i class="ph-bold ph-toolbox text-lg"></i> Operaciones de Herramientas
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <button onclick="executeToolTransaction('OUT')" class="group flex flex-col items-center justify-center gap-2 p-6 bg-white text-black rounded-2xl font-black uppercase tracking-wide transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 hover:scale-[1.03] active:scale-95">
+                <i class="ph-bold ph-arrow-up-right text-3xl group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm">Prestar / Salida</span>
+              </button>
+              <button onclick="executeToolTransaction('IN')" class="group flex flex-col items-center justify-center gap-2 p-6 bg-darkCard border-2 border-darkBorder hover:border-white text-white rounded-2xl font-black uppercase tracking-wide transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 hover:scale-[1.03] active:scale-95">
+                <i class="ph-bold ph-arrow-down-left text-3xl group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm">Devolver / Entrada</span>
+              </button>
+            </div>
+            <div class="relative h-40 w-full max-w-sm mx-auto rounded-2xl border border-darkBorder bg-black/50 overflow-hidden pointer-events-none" aria-hidden="true">
+              <span class="absolute left-3 top-3 h-6 w-6 border-l-2 border-t-2 border-white/70 rounded-tl-md"></span>
+              <span class="absolute right-3 top-3 h-6 w-6 border-r-2 border-t-2 border-white/70 rounded-tr-md"></span>
+              <span class="absolute left-3 bottom-3 h-6 w-6 border-l-2 border-b-2 border-white/70 rounded-bl-md"></span>
+              <span class="absolute right-3 bottom-3 h-6 w-6 border-r-2 border-b-2 border-white/70 rounded-br-md"></span>
+              <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-gray-600">
+                <i class="ph-bold ph-barcode text-4xl"></i>
+                <span class="text-[10px] font-mono uppercase tracking-widest">Área de escaneo</span>
+              </div>
+              <span class="kiosk-laser-line"></span>
+            </div>
+            <p id="kiosk-tool-scan-status" class="text-[11px] font-mono text-gray-500 text-center" aria-live="polite">Escaneá el código de la herramienta con la pistola lectora</p>
+
+            <!-- Registro manual de herramientas (sin escáner) -->
+            <div id="kiosk-tool-manual" class="kiosk-manual-in pt-4 border-t border-darkBorder space-y-3 text-left">
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-[10px] font-mono uppercase tracking-widest text-gray-500">Registro manual</p>
+                <p class="text-[10px] font-mono text-gray-600">Operario: <span id="kiosk-tool-operator" class="text-gray-400">—</span></p>
+              </div>
+              <select id="kiosk-tool-manual-code" class="w-full bg-black/50 border border-darkBorder rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white transition-colors"></select>
+              <div class="grid grid-cols-2 gap-3">
+                <button onclick="executeManualToolTransaction('OUT')" class="flex items-center justify-center gap-2 px-3 py-3 bg-white text-black rounded-xl font-black uppercase tracking-wide text-[11px] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 hover:scale-[1.02] active:scale-95">
+                  <i class="ph-bold ph-arrow-up-right text-base"></i> Salida manual
+                </button>
+                <button onclick="executeManualToolTransaction('IN')" class="flex items-center justify-center gap-2 px-3 py-3 bg-darkCard border-2 border-darkBorder hover:border-white text-white rounded-xl font-black uppercase tracking-wide text-[11px] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 hover:scale-[1.02] active:scale-95">
+                  <i class="ph-bold ph-arrow-down-left text-base"></i> Entrada manual
+                </button>
+              </div>
+            </div>
+
+            <button onclick="kioskReset()" class="w-full text-xs text-gray-500 hover:text-white underline underline-offset-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-105 active:scale-95">← Volver</button>
+          </div>
+        </div>
+
+        <!-- Panel de operaciones de VEHÍCULOS -->
+        <div id="kiosk-vehicles-panel" class="hidden w-full kiosk-fade-in">
+          <div class="glass-card p-6 rounded-2xl border border-darkBorder space-y-5">
+            <div class="flex items-center gap-2 text-white font-bold uppercase tracking-wide text-sm justify-center">
+              <i class="ph-bold ph-car text-lg"></i> Operaciones de Vehículos
+            </div>
+            <p id="kiosk-vehicle-operator" class="text-[11px] font-mono text-gray-500 text-center"></p>
+            <div id="kiosk-vehicles-content" class="space-y-4"></div>
+            <button onclick="kioskReset()" class="w-full text-xs text-gray-500 hover:text-white underline underline-offset-4 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-105 active:scale-95">← Volver</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ OVERLAY DE CONFIRMACIÓN ============ -->
+      <div id="kiosk-result-overlay" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="kiosk-result-box" class="bg-darkCard border-2 border-white rounded-3xl p-10 max-w-md w-full text-center kiosk-card-dip">
+          <div class="relative w-24 h-24 mx-auto mb-6">
+            <span class="kiosk-sonar absolute inset-0 rounded-full border-4 border-emerald-400"></span>
+            <div class="w-24 h-24 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+              <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path class="kiosk-check" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
             </div>
           </div>
+          <h3 id="kiosk-result-title" class="text-2xl font-black text-white uppercase tracking-wide mb-2">Operación exitosa</h3>
+          <p id="kiosk-result-detail" class="text-sm text-gray-400">Registro completado</p>
         </div>
       </div>
     </section>
-
-
-    <!-- 3. PANEL ADMIN (DASHBOARD) -->
     <section id="tab-admin" class="hidden space-y-8">
       <!-- Title & Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-darkBorder pb-4">
@@ -557,7 +807,7 @@
 
         <form onsubmit="registerFleetVehicle(event)" class="glass-card p-5 rounded-2xl space-y-4">
           <h4 class="text-sm font-bold text-white">Agregar vehículo al padrón</h4>
-          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
             <label class="space-y-1">
               <span class="block text-gray-400">Tipo</span>
               <select id="fleet-vehicle-type" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white">
@@ -570,8 +820,12 @@
               <input id="fleet-vehicle-plate" type="text" maxlength="12" placeholder="Ej.: AA123BB" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white uppercase" required />
             </label>
             <label class="space-y-1">
-              <span class="block text-gray-400">Marca y modelo</span>
-              <input id="fleet-vehicle-model" type="text" maxlength="100" placeholder="Ej.: Ford Ranger" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+              <span class="block text-gray-400">Marca</span>
+              <input id="fleet-vehicle-brand" type="text" maxlength="60" placeholder="Ej.: Ford" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
+            </label>
+            <label class="space-y-1">
+              <span class="block text-gray-400">Modelo</span>
+              <input id="fleet-vehicle-model" type="text" maxlength="60" placeholder="Ej.: Ranger" class="w-full bg-black border border-darkBorder p-2.5 rounded-lg text-white outline-none focus:border-white" required />
             </label>
             <label class="space-y-1">
               <span class="block text-gray-400">Kilometraje actual</span>
@@ -588,18 +842,19 @@
           </div>
           <div class="glass-card rounded-2xl overflow-hidden border border-darkBorder">
             <div class="overflow-x-auto">
-              <table class="w-full min-w-[650px] text-left text-xs">
+              <table class="w-full min-w-[750px] text-left text-xs">
                 <thead class="bg-black/60 text-gray-400 font-mono uppercase border-b border-darkBorder">
                   <tr>
                     <th class="p-3.5">Tipo</th>
                     <th class="p-3.5">Patente</th>
-                    <th class="p-3.5">Marca / modelo</th>
+                    <th class="p-3.5">Marca</th>
+                    <th class="p-3.5">Modelo</th>
                     <th class="p-3.5">Kilometraje actual</th>
                     <th class="p-3.5">Estado</th>
                   </tr>
                 </thead>
                 <tbody id="fleet-vehicles-table-body" class="divide-y divide-darkBorder text-gray-300">
-                  <tr><td colspan="5" class="p-4 text-gray-500">Aún no hay vehículos en el padrón.</td></tr>
+                  <tr><td colspan="6" class="p-4 text-gray-500">Aún no hay vehículos en el padrón.</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1203,7 +1458,7 @@
   <script>
     /* ================= APP STATE ================= */
     let state = {
-      currentTab: 'landing',
+      currentTab: 'terminal',
       adminAuthenticated: false,
       terminalMode: 'tool', // 'tool' or 'attendance'
       adminSubtab: 'inventory',
@@ -1228,6 +1483,93 @@
       excelParsedData: null
     };
 
+    let audioContext = null;
+    let soundEnabled = true;
+
+    function ensureAudioContext() {
+      try {
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) return null;
+        if (!audioContext) audioContext = new Ctor();
+        if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+        return audioContext;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function playUiTone(freq, duration, options = {}) {
+      if (!soundEnabled) return;
+      const ctx = ensureAudioContext();
+      if (!ctx) return;
+      const { type = 'sine', volume = 0.045, delay = 0, endFreq = null } = options;
+      const start = ctx.currentTime + delay;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, start);
+      if (endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(40, endFreq), start + duration);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + duration + 0.03);
+    }
+
+    function playUiSound(kind) {
+      switch (kind) {
+        case 'click':
+          playUiTone(880, 0.05, { type: 'triangle', volume: 0.018 });
+          break;
+        case 'scan':
+          playUiTone(520, 0.12, { volume: 0.04, endFreq: 1400 });
+          playUiTone(1400, 0.06, { type: 'triangle', volume: 0.026, delay: 0.11 });
+          break;
+        case 'entry':
+          playUiTone(523, 0.1, { volume: 0.05 });
+          playUiTone(784, 0.16, { volume: 0.05, delay: 0.1 });
+          break;
+        case 'exit':
+          playUiTone(784, 0.1, { volume: 0.05 });
+          playUiTone(523, 0.16, { volume: 0.05, delay: 0.1 });
+          break;
+        case 'manual':
+          playUiTone(440, 0.07, { volume: 0.04 });
+          playUiTone(660, 0.07, { volume: 0.04, delay: 0.06 });
+          playUiTone(880, 0.13, { volume: 0.04, delay: 0.12 });
+          break;
+        case 'success':
+          playUiTone(659, 0.09, { volume: 0.05 });
+          playUiTone(880, 0.09, { volume: 0.05, delay: 0.08 });
+          playUiTone(1175, 0.16, { volume: 0.045, delay: 0.16 });
+          break;
+        case 'error':
+          playUiTone(220, 0.18, { type: 'sawtooth', volume: 0.045 });
+          playUiTone(147, 0.24, { type: 'sawtooth', volume: 0.035, delay: 0.12 });
+          break;
+        case 'notify':
+          playUiTone(740, 0.09, { volume: 0.035 });
+          break;
+      }
+    }
+
+    function restartKioskAnimation(element, className) {
+      if (!element) return;
+      element.classList.remove(className);
+      void element.offsetWidth;
+      element.classList.add(className);
+    }
+
+    function flashKioskManual() {
+      restartKioskAnimation(document.getElementById('kiosk-tool-manual'), 'kiosk-manual-flash');
+    }
+
+    function popKioskToolStatus() {
+      restartKioskAnimation(document.getElementById('kiosk-tool-scan-status'), 'kiosk-status-pop');
+    }
+
     /* ================= INIT & EVENT LISTENERS ================= */
     window.addEventListener('DOMContentLoaded', () => {
       loadBusinessData();
@@ -1237,21 +1579,29 @@
       const exitDateInput = document.getElementById('maint-exit-date');
       if (exitDateInput) exitDateInput.value = new Date().toISOString().slice(0, 10);
       renderAll();
+      switchTab('terminal');
+      document.getElementById('kiosk-result-overlay')?.classList.add('hidden');
+      document.getElementById('credencial-modal')?.classList.add('hidden');
+      document.addEventListener('pointerdown', () => ensureAudioContext(), { once: true });
+      document.addEventListener('keydown', () => ensureAudioContext(), { once: true });
+      document.addEventListener('click', event => {
+        if (event.target.closest('button')) playUiSound('click');
+      });
     });
 
     function renderAll() {
-      renderInventoryTable();
-      renderEmployeesTable();
-      renderLogsTable();
-      renderFleetVehicles();
-      renderVehicleTrips();
-      renderMaintenanceStaff();
-      renderMaintenanceExitOptions();
-      renderSystemPreview();
-      renderRecentTerminalLogs();
-      updateKPIs();
-      populatePortalUserDropdown();
-      updateEmployeePortalView();
+      try { renderInventoryTable(); } catch (err) { console.warn(err); }
+      try { renderEmployeesTable(); } catch (err) { console.warn(err); }
+      try { renderLogsTable(); } catch (err) { console.warn(err); }
+      try { renderFleetVehicles(); } catch (err) { console.warn(err); }
+      try { renderVehicleTrips(); } catch (err) { console.warn(err); }
+      try { renderMaintenanceStaff(); } catch (err) { console.warn(err); }
+      try { renderMaintenanceExitOptions(); } catch (err) { console.warn(err); }
+      try { renderSystemPreview(); } catch (err) { console.warn(err); }
+      try { renderRecentTerminalLogs(); } catch (err) { console.warn(err); }
+      try { updateKPIs(); } catch (err) { console.warn(err); }
+      try { populatePortalUserDropdown(); } catch (err) { console.warn(err); }
+      try { updateEmployeePortalView(); } catch (err) { console.warn(err); }
     }
 
     /* ================= NAVIGATION LOGIC ================= */
@@ -1262,8 +1612,20 @@
       }
 
       state.currentTab = tabId;
+
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      document.getElementById('kiosk-result-overlay')?.classList.add('hidden');
+      document.getElementById('credencial-modal')?.classList.add('hidden');
+      document.getElementById('admin-login-modal')?.classList.add('hidden');
+      document.getElementById('bot-modal')?.classList.add('hidden');
+
+      if (tabId === 'terminal') {
+        showKioskScanPhase();
+      } else {
+        stopKioskPolling();
+      }
 
       // Update Nav Button Styles
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -1311,23 +1673,406 @@
     }
 
     function setTerminalMode(mode) {
+      // Legado: el modo ahora se elige desde las opciones grandes del kiosco.
       state.terminalMode = mode;
-      const toolBtn = document.getElementById('mode-tool');
-      const attBtn = document.getElementById('mode-attendance');
-      const toolBtns = document.getElementById('tool-action-buttons');
-      const attBtns = document.getElementById('attendance-action-buttons');
+    }
 
-      if (mode === 'tool') {
-        toolBtn.className = 'py-2 text-xs font-bold rounded-lg bg-white text-black transition-all';
-        attBtn.className = 'py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all';
-        toolBtns.classList.remove('hidden');
-        attBtns.classList.add('hidden');
-      } else {
-        attBtn.className = 'py-2 text-xs font-bold rounded-lg bg-white text-black transition-all';
-        toolBtn.className = 'py-2 text-xs font-bold rounded-lg text-gray-400 hover:text-white transition-all';
-        attBtns.classList.remove('hidden');
-        toolBtns.classList.add('hidden');
+    /* ================= KIOSK WELCOME FLOW (estilo Lotus) ================= */
+    let kioskCodeTimer = null;
+
+    function restartKioskEntrance() {
+      const phase = document.getElementById('kiosk-scan-phase');
+      if (!phase) return;
+      const items = Array.from(phase.querySelectorAll('.kiosk-rise'));
+      items.forEach(el => el.classList.remove('kiosk-rise'));
+      void phase.offsetWidth;
+      items.forEach(el => el.classList.add('kiosk-rise'));
+    }
+
+    function restartOptionsStagger() {
+      const opts = document.getElementById('kiosk-options-phase');
+      if (!opts) return;
+      const items = Array.from(opts.querySelectorAll('.kiosk-option'));
+      items.forEach(el => el.classList.remove('kiosk-option'));
+      opts.classList.remove('kiosk-options-expand');
+      void opts.offsetWidth;
+      opts.classList.add('kiosk-options-expand');
+      items.forEach(el => el.classList.add('kiosk-option'));
+    }
+
+    function showKioskScanPhase() {
+      const scan = document.getElementById('kiosk-scan-phase');
+      const opts = document.getElementById('kiosk-options-phase');
+      const action = document.getElementById('kiosk-action-phase');
+      scan.classList.remove('hidden');
+      scan.classList.add('flex');
+      scan.classList.remove('kiosk-fade-in');
+      void scan.offsetWidth;
+      scan.classList.add('kiosk-fade-in');
+      restartKioskEntrance();
+      opts.classList.add('hidden');
+      opts.classList.remove('flex');
+      if (action) {
+        action.classList.add('hidden');
+        action.classList.remove('flex');
       }
+      state.terminalOperator = null;
+      state.kioskPanel = 'options';
+      state.kioskAttendanceAction = null;
+      state.kioskToolCode = null;
+      document.getElementById('kiosk-vehicles-panel')?.classList.add('hidden');
+      const toolStatus = document.getElementById('kiosk-tool-scan-status');
+      if (toolStatus) toolStatus.innerText = 'Escaneá el código de la herramienta con la pistola lectora';
+      const hidden = document.getElementById('scan-input');
+      if (hidden) { hidden.value = ''; }
+      if (!state.kioskPolling) startKioskPolling();
+    }
+
+    function showKioskOptionsPhase(emp) {
+      const scan = document.getElementById('kiosk-scan-phase');
+      const opts = document.getElementById('kiosk-options-phase');
+      const action = document.getElementById('kiosk-action-phase');
+      scan.classList.add('hidden');
+      scan.classList.remove('flex');
+      if (action) {
+        action.classList.add('hidden');
+        action.classList.remove('flex');
+      }
+      opts.classList.remove('hidden');
+      opts.classList.add('flex');
+      stopKioskPolling();
+      restartOptionsStagger();
+
+      const nameEl = document.getElementById('kiosk-op-name');
+      const roleEl = document.getElementById('kiosk-op-role');
+      const codeEl = document.getElementById('kiosk-op-code');
+      const avatarEl = document.getElementById('kiosk-avatar');
+
+      if (emp) {
+        nameEl.innerText = emp.name;
+        roleEl.innerText = emp.role;
+        avatarEl.innerText = emp.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      const targetCode = emp
+        ? `#${emp.code}`
+        : (state.kioskToolCode ? `#${state.kioskToolCode}` : codeEl.innerText);
+
+      [nameEl, roleEl, codeEl].forEach(el => el && el.classList.remove('code-reveal'));
+      if (nameEl) nameEl.classList.add('code-reveal');
+      if (roleEl) roleEl.classList.add('code-reveal');
+
+      if (codeEl) {
+        codeEl.innerHTML = '<span class="code-skeleton" aria-label="Generando código"></span>';
+        if (kioskCodeTimer) clearTimeout(kioskCodeTimer);
+        kioskCodeTimer = setTimeout(() => {
+          codeEl.innerText = targetCode;
+          codeEl.classList.add('code-reveal');
+          kioskCodeTimer = null;
+        }, 360);
+      }
+
+      const statusEl = document.getElementById('kiosk-op-status');
+      const subtitleEl = document.getElementById('kiosk-options-subtitle');
+      if (emp) {
+        const entering = state.kioskAttendanceAction !== 'EXIT';
+        if (statusEl) statusEl.innerText = entering ? 'Ingreso registrado' : 'Egreso registrado';
+        if (subtitleEl) subtitleEl.innerText = entering
+          ? 'Fichaje de ingreso automático. Elegí una operación interna para continuar.'
+          : 'Fichaje de egreso automático. Elegí una operación interna para continuar.';
+      } else {
+        if (statusEl) statusEl.innerText = 'Habilitado';
+        if (subtitleEl) subtitleEl.innerText = 'Elegí una opción para continuar';
+      }
+      restartKioskAnimation(statusEl, 'kiosk-status-pop');
+    }
+
+    function triggerKioskSonar() {
+      const sonar = document.getElementById('kiosk-sonar');
+      const card = document.getElementById('kiosk-card');
+      if (sonar) {
+        sonar.classList.remove('kiosk-sonar');
+        void sonar.offsetWidth;
+        sonar.classList.add('kiosk-sonar');
+      }
+      if (card) {
+        card.classList.remove('kiosk-card-dip');
+        void card.offsetWidth;
+        card.classList.add('kiosk-card-dip');
+      }
+    }
+
+    function simulateKioskScan(code) {
+      const input = document.getElementById('scan-input');
+      if (code) input.value = code;
+      if (!input.value.trim()) {
+        input.value = 'EMP-101';
+      }
+      const typed = input.value.trim().toUpperCase();
+      triggerKioskSonar();
+      playUiSound('scan');
+
+      // Animación breve y luego pasamos a las opciones grandes.
+      setTimeout(() => {
+        const emp = state.employees.find(e => e.code === typed);
+        if (emp) {
+          state.terminalOperator = emp;
+          const entering = !emp.present;
+          emp.present = entering;
+          state.kioskAttendanceAction = entering ? 'ENTRY' : 'EXIT';
+          const timestamp = new Date().toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+          addLog(timestamp, 'ASISTENCIA', `${emp.code} (${emp.name})`, entering ? 'INGRESO a Planta' : 'EGRESO de Planta');
+          renderAll();
+          showToast(entering ? `Ingreso fichado: ${emp.name}` : `Egreso fichado: ${emp.name}`, 'success', true);
+          playUiSound(entering ? 'entry' : 'exit');
+          showKioskOptionsPhase(emp);
+        } else {
+          const tool = state.tools.find(t => t.code === typed);
+          if (tool) {
+            state.terminalOperator = null;
+            state.kioskToolCode = typed;
+            showKioskOptionsPhase(null);
+            showToast(`Código de herramienta ${typed} listo para operar`, 'info');
+          } else {
+            showToast(`Código ${typed} no reconocido`, 'error');
+            input.value = '';
+          }
+        }
+      }, 650);
+    }
+
+    function showKioskActionPanel(panelId) {
+      const opts = document.getElementById('kiosk-options-phase');
+      const action = document.getElementById('kiosk-action-phase');
+      if (opts) {
+        opts.classList.add('hidden');
+        opts.classList.remove('flex');
+      }
+      if (action) {
+        action.classList.remove('hidden');
+        action.classList.add('flex');
+      }
+      ['kiosk-tools-panel', 'kiosk-vehicles-panel'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+      });
+      document.getElementById(panelId)?.classList.remove('hidden');
+    }
+
+    function kioskGoToTools() {
+      state.terminalMode = 'tool';
+      state.kioskPanel = 'tools';
+      showKioskActionPanel('kiosk-tools-panel');
+
+      const input = document.getElementById('scan-input');
+      if (input) {
+        input.value = state.kioskToolCode || '';
+        input.focus();
+      }
+      state.kioskToolCode = null;
+
+      const status = document.getElementById('kiosk-tool-scan-status');
+      if (status) status.innerText = 'Escaneá el código de la herramienta con la pistola lectora';
+      popKioskToolStatus();
+      renderKioskToolManualOptions();
+      const operatorEl = document.getElementById('kiosk-tool-operator');
+      if (operatorEl) operatorEl.innerText = state.terminalOperator ? state.terminalOperator.code : 'MANUAL';
+      startKioskPolling();
+    }
+
+    function kioskGoToVehicles() {
+      state.terminalMode = 'vehicle';
+      state.kioskPanel = 'vehicles';
+      showKioskActionPanel('kiosk-vehicles-panel');
+      renderKioskVehicles();
+      startKioskPolling();
+    }
+
+    function kioskReset() {
+      document.getElementById('kiosk-action-phase')?.classList.add('hidden');
+      document.getElementById('kiosk-action-phase')?.classList.remove('flex');
+      document.getElementById('kiosk-tools-panel')?.classList.add('hidden');
+      document.getElementById('kiosk-vehicles-panel')?.classList.add('hidden');
+      state.kioskToolCode = null;
+      showKioskScanPhase();
+    }
+
+    function handleKioskToolScan() {
+      const input = document.getElementById('scan-input');
+      const status = document.getElementById('kiosk-tool-scan-status');
+      const code = input.value.trim().toUpperCase();
+      if (!code) return;
+
+      const tool = state.tools.find(t => t.code === code);
+      if (!tool) {
+        if (status) status.innerHTML = `Código <strong class="text-white">${escapeHtml(code)}</strong> no reconocido. Volvé a escanear.`;
+        popKioskToolStatus();
+        showToast(`Herramienta ${code} no encontrada`, 'error');
+        input.value = '';
+        return;
+      }
+
+      state.kioskToolCode = code;
+      const estado = tool.status === 'EN_USO' ? 'En uso' : (tool.status === 'MANTENIMIENTO' ? 'En mantenimiento' : 'Disponible');
+      if (status) {
+        status.innerHTML = `Leído: <strong class="text-white">${escapeHtml(tool.name)}</strong> · ${estado}. Elegí Prestar o Devolver.`;
+      }
+      popKioskToolStatus();
+      playUiSound('scan');
+    }
+
+    function renderKioskToolManualOptions() {
+      const select = document.getElementById('kiosk-tool-manual-code');
+      if (!select) return;
+      const current = select.value;
+      const label = status => status === 'EN_USO' ? 'En uso' : (status === 'MANTENIMIENTO' ? 'Mantenimiento' : 'Disponible');
+      select.innerHTML = state.tools.map(tool =>
+        `<option value="${escapeHtml(tool.code)}" style="background-color:#111111;color:#ffffff">${escapeHtml(tool.code)} · ${escapeHtml(tool.name)} · ${label(tool.status)}</option>`
+      ).join('');
+      if (current && state.tools.some(tool => tool.code === current)) select.value = current;
+      else if (state.tools.length) select.value = state.tools[0].code;
+    }
+
+    function renderKioskVehicles() {
+      const content = document.getElementById('kiosk-vehicles-content');
+      const operatorEl = document.getElementById('kiosk-vehicle-operator');
+      if (!content) return;
+
+      const operator = state.terminalOperator;
+      if (operatorEl) {
+        operatorEl.innerText = operator
+          ? `Operario: ${operator.name} (${operator.code})`
+          : 'Escaneá tu credencial para registrar movimientos.';
+      }
+
+      const activeTrips = state.vehicleTrips.filter(trip => trip.returnAt === null);
+      const activePlates = new Set(activeTrips.map(trip => trip.plate));
+      const available = state.fleetVehicles.filter(vehicle => !activePlates.has(vehicle.plate));
+
+      const availableHtml = available.length
+        ? available.map(vehicle => `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-darkBorder bg-black/40 p-3">
+              <div>
+                <p class="text-sm font-bold text-white">${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.model)}</p>
+                <p class="text-[10px] font-mono text-gray-500 uppercase">${escapeHtml(vehicle.type)} · ${escapeHtml(vehicle.plate)} · ${vehicle.km} km</p>
+              </div>
+              <button onclick="kioskAssignVehicle('${escapeHtml(vehicle.id)}')" class="bg-white text-black font-bold px-3 py-2 rounded-lg text-[10px] uppercase hover:bg-gray-200 active:scale-95 transition-all">Asignar salida</button>
+            </div>`).join('')
+        : '<p class="text-[11px] text-gray-500">No hay vehículos disponibles.</p>';
+
+      const activeHtml = activeTrips.length
+        ? activeTrips.map(trip => {
+            const vehicle = state.fleetVehicles.find(item => item.id === trip.vehicleId || item.plate === trip.plate);
+            const nombre = vehicle ? `${vehicle.brand} ${vehicle.model}` : trip.plate;
+            return `
+              <div class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <div>
+                    <p class="text-sm font-bold text-white">${escapeHtml(nombre)}</p>
+                    <p class="text-[10px] font-mono text-amber-300 uppercase">${escapeHtml(trip.plate)} · ${escapeHtml(trip.driver)} · salida ${trip.exitKm} km</p>
+                  </div>
+                  <span class="text-[10px] font-mono text-amber-300">FUERA</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input id="vehicle-return-km-${escapeHtml(trip.id)}" type="number" min="${trip.exitKm}" step="0.1" placeholder="Km regreso" class="flex-1 bg-black border border-darkBorder p-2 rounded text-white outline-none focus:border-white text-xs" />
+                  <button onclick="kioskReturnVehicle('${escapeHtml(trip.id)}')" class="bg-white text-black font-bold px-3 py-2 rounded-lg text-[10px] uppercase hover:bg-gray-200 active:scale-95 transition-all">Devolver</button>
+                </div>
+              </div>`;
+          }).join('')
+        : '<p class="text-[11px] text-gray-500">No hay vehículos fuera de la planta.</p>';
+
+      content.innerHTML = `
+        <div class="space-y-2">
+          <p class="text-[10px] font-mono uppercase tracking-widest text-gray-400">Disponibles</p>
+          ${availableHtml}
+        </div>
+        <div class="space-y-2">
+          <p class="text-[10px] font-mono uppercase tracking-widest text-gray-400">Fuera de la planta</p>
+          ${activeHtml}
+        </div>`;
+    }
+
+    function kioskAssignVehicle(vehicleId) {
+      const vehicle = state.fleetVehicles.find(item => item.id === vehicleId);
+      if (!vehicle) {
+        showToast('El vehículo seleccionado no existe.', 'error');
+        return;
+      }
+      const operator = state.terminalOperator;
+      if (!operator) {
+        showToast('Escaneá tu credencial antes de asignar un vehículo.', 'error');
+        return;
+      }
+      if (state.vehicleTrips.some(trip => (trip.vehicleId === vehicle.id || trip.plate === vehicle.plate) && trip.returnAt === null)) {
+        showToast(`El vehículo ${vehicle.plate} ya está fuera de la planta.`, 'error');
+        return;
+      }
+
+      const trip = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        vehicleId: vehicle.id,
+        plate: vehicle.plate,
+        driver: operator.name,
+        destination: 'Uso interno',
+        reason: 'Asignación desde kiosco',
+        exitKm: vehicle.km,
+        exitAt: new Date().toISOString(),
+        returnKm: null,
+        returnAt: null
+      };
+      const updatedTrips = [trip, ...state.vehicleTrips];
+      if (!saveVehicleTrips(updatedTrips)) return;
+
+      state.vehicleTrips = updatedTrips;
+      addLog(formatVehicleDate(trip.exitAt), 'EGRESO VEHÍCULO', `${vehicle.plate} (${operator.name})`, `${vehicle.brand} ${vehicle.model}; Asignación desde kiosco; salida ${vehicle.km} km`);
+      renderAll();
+      renderKioskVehicles();
+      kioskShowResult('Vehículo asignado', `${vehicle.brand} ${vehicle.model} · ${vehicle.plate}`);
+    }
+
+    function kioskReturnVehicle(tripId) {
+      const trip = state.vehicleTrips.find(item => item.id === tripId);
+      if (!trip) {
+        showToast('El movimiento no existe.', 'error');
+        return;
+      }
+      registerVehicleReturn(tripId);
+      const updated = state.vehicleTrips.find(item => item.id === tripId);
+      if (updated && updated.returnAt !== null) {
+        renderKioskVehicles();
+        kioskShowResult('Vehículo devuelto', `${updated.plate} · ${updated.returnKm} km`);
+      }
+    }
+
+    let kioskPollTimer = null;
+    let kioskListenerBound = false;
+
+    function startKioskPolling() {
+      // Los lectores USB escriben en el input oculto y presionan Enter.
+      const hidden = document.getElementById('scan-input');
+      if (!hidden) return;
+      hidden.focus();
+      if (!kioskListenerBound) {
+        kioskListenerBound = true;
+        hidden.addEventListener('keydown', (ev) => {
+          if (ev.key !== 'Enter') return;
+          ev.preventDefault();
+          if (state.kioskPanel === 'tools') { handleKioskToolScan(); return; }
+          if (state.kioskPanel === 'vehicles') return;
+          simulateKioskScan();
+        });
+      }
+      if (state.kioskPolling) return;
+      state.kioskPolling = true;
+      kioskPollTimer = setInterval(() => {
+        const active = document.activeElement;
+        const typing = active && ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName);
+        if (!typing) hidden.focus();
+      }, 800);
+    }
+
+    function stopKioskPolling() {
+      state.kioskPolling = false;
+      if (kioskPollTimer) { clearInterval(kioskPollTimer); kioskPollTimer = null; }
     }
 
     function switchAdminSubtab(subtab) {
@@ -1348,22 +2093,39 @@
     const VEHICLE_TRIPS_STORAGE_KEY = 'sitec-jack-solutions-vehicle-trips';
     const FLEET_VEHICLES_STORAGE_KEY = 'sitec-jack-solutions-fleet-vehicles';
 
+    function normalizeFleetVehicle(vehicle) {
+      if (!vehicle || typeof vehicle !== 'object') return vehicle;
+      if (typeof vehicle.brand !== 'string' || typeof vehicle.model !== 'string') {
+        const legacy = typeof vehicle.brandModel === 'string' ? vehicle.brandModel.trim() : '';
+        const parts = legacy.split(/\s+/).filter(Boolean);
+        if (typeof vehicle.brand !== 'string') vehicle.brand = parts.shift() || '';
+        if (typeof vehicle.model !== 'string') vehicle.model = parts.join(' ');
+        delete vehicle.brandModel;
+      }
+      return vehicle;
+    }
+
     function loadFleetVehicles() {
       try {
         const savedVehicles = window.localStorage.getItem(FLEET_VEHICLES_STORAGE_KEY);
         if (savedVehicles === null) return [];
 
         const vehicles = JSON.parse(savedVehicles);
-        if (!Array.isArray(vehicles) || !vehicles.every(vehicle =>
+        if (!Array.isArray(vehicles)) {
+          throw new TypeError('Formato del padrón de vehículos inválido');
+        }
+        const normalized = vehicles.map(normalizeFleetVehicle);
+        if (!normalized.every(vehicle =>
           vehicle && typeof vehicle.id === 'string' &&
           ['Auto', 'Camioneta'].includes(vehicle.type) &&
           typeof vehicle.plate === 'string' &&
-          typeof vehicle.brandModel === 'string' &&
+          typeof vehicle.brand === 'string' &&
+          typeof vehicle.model === 'string' &&
           Number.isFinite(vehicle.km) && vehicle.km >= 0
         )) {
           throw new TypeError('Formato del padrón de vehículos inválido');
         }
-        return vehicles;
+        return normalized;
       } catch (error) {
         console.error('No se pudo cargar el padrón de vehículos guardado.', error);
         showToast('No se pudo cargar el padrón de vehículos guardado en este navegador.', 'error');
@@ -1585,10 +2347,11 @@
       event.preventDefault();
       const type = document.getElementById('fleet-vehicle-type').value;
       const plate = document.getElementById('fleet-vehicle-plate').value.trim().toUpperCase();
-      const brandModel = document.getElementById('fleet-vehicle-model').value.trim();
+      const brand = document.getElementById('fleet-vehicle-brand').value.trim();
+      const model = document.getElementById('fleet-vehicle-model').value.trim();
       const km = Number(document.getElementById('fleet-vehicle-km').value);
 
-      if (!['Auto', 'Camioneta'].includes(type) || !plate || !brandModel || !Number.isFinite(km) || km < 0) {
+      if (!['Auto', 'Camioneta'].includes(type) || !plate || !brand || !model || !Number.isFinite(km) || km < 0) {
         showToast('Completa los datos del vehículo con un kilometraje válido.', 'error');
         return;
       }
@@ -1601,7 +2364,8 @@
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         type,
         plate,
-        brandModel,
+        brand,
+        model,
         km
       };
       const updatedVehicles = [...state.fleetVehicles, vehicle];
@@ -1635,7 +2399,7 @@
       count.textContent = `${state.fleetVehicles.length} vehículo${state.fleetVehicles.length === 1 ? '' : 's'} · ${availableCount} disponible${availableCount === 1 ? '' : 's'}`;
 
       if (state.fleetVehicles.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-gray-500">Aún no hay vehículos en el padrón. Agrega un auto o camioneta para comenzar.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-gray-500">Aún no hay vehículos en el padrón. Agrega un auto o camioneta para comenzar.</td></tr>';
       } else {
         tbody.innerHTML = state.fleetVehicles.map(vehicle => {
           const active = activePlates.has(vehicle.plate);
@@ -1643,7 +2407,8 @@
             <tr class="hover:bg-white/5">
               <td class="p-3.5">${escapeHtml(vehicle.type)}</td>
               <td class="p-3.5 font-mono font-bold text-white">${escapeHtml(vehicle.plate)}</td>
-              <td class="p-3.5">${escapeHtml(vehicle.brandModel)}</td>
+              <td class="p-3.5">${escapeHtml(vehicle.brand)}</td>
+              <td class="p-3.5">${escapeHtml(vehicle.model)}</td>
               <td class="p-3.5 font-mono">${vehicle.km} km</td>
               <td class="p-3.5">${active ? '<span class="text-amber-300 font-bold">FUERA</span>' : '<span class="text-emerald-400 font-bold">DISPONIBLE</span>'}</td>
             </tr>
@@ -1654,7 +2419,7 @@
       const availableVehicles = state.fleetVehicles.filter(vehicle => !activePlates.has(vehicle.plate));
       select.innerHTML = availableVehicles.length
         ? `<option value="">Selecciona un vehículo</option>${availableVehicles.map(vehicle =>
-          `<option value="${escapeHtml(vehicle.id)}">${escapeHtml(vehicle.type)} · ${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicle.brandModel)} (${vehicle.km} km)</option>`
+          `<option value="${escapeHtml(vehicle.id)}">${escapeHtml(vehicle.type)} · ${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.model)} (${vehicle.km} km)</option>`
         ).join('')}`
         : '<option value="">No hay vehículos disponibles para salir</option>';
       if (availableVehicles.some(vehicle => vehicle.id === currentSelection)) {
@@ -1697,7 +2462,7 @@
       if (!saveVehicleTrips(updatedTrips)) return;
 
       state.vehicleTrips = updatedTrips;
-      addLog(formatVehicleDate(trip.exitAt), 'EGRESO VEHÍCULO', `${vehicle.plate} (${driver})`, `${vehicle.brandModel}; ${destination} — ${reason}; salida ${exitKm} km`);
+      addLog(formatVehicleDate(trip.exitAt), 'EGRESO VEHÍCULO', `${vehicle.plate} (${driver})`, `${vehicle.brand} ${vehicle.model}; ${destination} — ${reason}; salida ${exitKm} km`);
       event.target.reset();
       renderAll();
       showToast(`Egreso del vehículo ${plate} registrado.`, 'success');
@@ -2178,14 +2943,45 @@
       }
     }
 
+    function kioskShowResult(title, detail) {
+      const overlay = document.getElementById('kiosk-result-overlay');
+      const box = document.getElementById('kiosk-result-box');
+      if (!overlay) return;
+      playUiSound('success');
+      document.getElementById('kiosk-result-title').innerText = title;
+      document.getElementById('kiosk-result-detail').innerText = detail;
+      overlay.classList.remove('hidden');
+      box.classList.remove('kiosk-card-dip');
+      void box.offsetWidth;
+      box.classList.add('kiosk-card-dip');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        kioskReset();
+      }, 1800);
+    }
+
     function executeToolTransaction(direction) {
       const input = document.getElementById('scan-input');
-      const code = input.value.trim().toUpperCase();
+      const code = input.value.trim().toUpperCase() || (state.kioskToolCode || '');
       if (!code) {
         showToast('Por favor ingrese un código de herramienta', 'error');
         return;
       }
+      performToolTransaction(code, direction, true);
+    }
 
+    function executeManualToolTransaction(direction) {
+      const select = document.getElementById('kiosk-tool-manual-code');
+      const code = (select && select.value || '').trim().toUpperCase();
+      if (!code) {
+        showToast('Seleccioná una herramienta para registrar el movimiento', 'error');
+        return;
+      }
+      performToolTransaction(code, direction, false);
+    }
+
+    function performToolTransaction(code, direction, fromScanner) {
+      const input = document.getElementById('scan-input');
       const tool = state.tools.find(t => t.code === code);
       if (!tool) {
         showToast(`Herramienta ${code} no encontrada en inventario`, 'error');
@@ -2193,6 +2989,9 @@
       }
 
       const timestamp = new Date().toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+      const operatorCode = (state.terminalOperator && state.terminalOperator.code) || 'MANUAL';
+      const statusEl = document.getElementById('kiosk-tool-scan-status');
+      let message = '';
 
       if (direction === 'OUT') {
         if (tool.status === 'EN_USO') {
@@ -2204,23 +3003,35 @@
           return;
         }
         tool.status = 'EN_USO';
-        tool.assignedTo = 'EMP-101'; // Default assigned to current operator for demo
-        addLog(timestamp, 'PRÉSTAMO', `${code} (${tool.name})`, 'Prestado a EMP-101');
-        showToast(`ÉXITO: ${code} registrado como PRESTADO`, 'success');
+        tool.assignedTo = operatorCode;
+        addLog(timestamp, 'PRÉSTAMO', `${code} (${tool.name})`, `Prestado a ${operatorCode}${fromScanner ? '' : ' (manual)'}`);
+        message = `${fromScanner ? 'Salida' : 'Salida manual'} registrada`;
       } else {
         tool.status = 'DISPONIBLE';
         tool.assignedTo = '-';
-        addLog(timestamp, 'DEVOLUCIÓN', `${code} (${tool.name})`, 'Ingresado a Pañol');
-        showToast(`ÉXITO: ${code} registrado como DEVUELTO`, 'success');
+        addLog(timestamp, 'DEVOLUCIÓN', `${code} (${tool.name})`, `Ingresado a Pañol${fromScanner ? '' : ' (manual)'}`);
+        message = `${fromScanner ? 'Devolución' : 'Entrada manual'} registrada`;
       }
 
-      input.value = '';
+      if (input) input.value = '';
+      state.kioskToolCode = null;
       renderAll();
+
+      if (fromScanner) {
+        kioskShowResult(message, `${code} · ${tool.name}`);
+      } else {
+        renderKioskToolManualOptions();
+        if (statusEl) statusEl.innerText = `${message}: ${code} · ${tool.name}`;
+        popKioskToolStatus();
+        flashKioskManual();
+        playUiSound('manual');
+        showToast(message, 'success', true);
+      }
     }
 
     function executeAttendanceTransaction(direction) {
       const input = document.getElementById('scan-input');
-      const code = input.value.trim().toUpperCase();
+      const code = input.value.trim().toUpperCase() || (state.terminalOperator && state.terminalOperator.code) || '';
       if (!code) {
         showToast('Por favor ingrese un código de empleado', 'error');
         return;
@@ -2237,15 +3048,16 @@
       if (direction === 'ENTRY') {
         emp.present = true;
         addLog(timestamp, 'ASISTENCIA', `${emp.code} (${emp.name})`, 'INGRESO a Planta');
-        showToast(`BIENVENIDO: Ingreso fichado para ${emp.name}`, 'success');
+        input.value = '';
+        renderAll();
+        kioskShowResult('Ingreso fichado', emp.name);
       } else {
         emp.present = false;
         addLog(timestamp, 'ASISTENCIA', `${emp.code} (${emp.name})`, 'EGRESO de Planta');
-        showToast(`HASTA LUEGO: Egreso fichado para ${emp.name}`, 'success');
+        input.value = '';
+        renderAll();
+        kioskShowResult('Egreso fichado', emp.name);
       }
-
-      input.value = '';
-      renderAll();
     }
 
     function addLog(datetime, type, item, detail) {
@@ -2255,6 +3067,7 @@
 
     function renderRecentTerminalLogs() {
       const container = document.getElementById('terminal-recent-logs');
+      if (!container) return;
       if (state.logs.length === 0) {
         container.innerHTML = '<p class="text-gray-500">Sin movimientos aún.</p>';
         return;
@@ -2393,7 +3206,53 @@
       showToast(`Empleado ${code} eliminado`, 'info');
     }
 
-    /* ================= MODALS & FORMS ================= */
+    function showCredentialModal(title, code, name, subtitle) {
+      let modal = document.getElementById('credencial-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'credencial-modal';
+        modal.className = 'fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4';
+        modal.innerHTML = `
+          <div class="glass-panel max-w-sm w-full p-6 rounded-2xl space-y-4 border border-white/20 text-center relative">
+            <button onclick="closeCredentialModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="ph-bold ph-x text-lg"></i></button>
+            <div>
+              <h3 id="credencial-title" class="text-sm font-bold text-white uppercase tracking-wider">Credencial</h3>
+              <p id="credencial-subtitle" class="text-xs text-gray-400 mt-1"></p>
+            </div>
+            <div class="w-16 h-16 bg-white text-black font-black text-2xl rounded-2xl mx-auto flex items-center justify-center" id="credencial-initials">--</div>
+            <div>
+              <p id="credencial-name" class="text-lg font-bold text-white"></p>
+            </div>
+            <div id="credencial-qr" class="flex items-center justify-center p-4 bg-white rounded-xl mx-auto w-fit"></div>
+            <div id="credencial-code" class="font-mono text-sm bg-black border border-darkBorder text-white px-4 py-2 rounded-lg inline-block"></div>
+            <div class="flex gap-2 pt-2">
+              <button onclick="printCredential()" class="flex-1 bg-white text-black font-bold py-2 rounded-xl text-xs hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5"><i class="ph-bold ph-printer"></i> Imprimir</button>
+              <button onclick="closeCredentialModal()" class="flex-1 bg-darkCard border border-darkBorder hover:border-white text-white font-bold py-2 rounded-xl text-xs transition-all">Cerrar</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      }
+      document.getElementById('credencial-title').innerText = title;
+      document.getElementById('credencial-subtitle').innerText = subtitle || '';
+      document.getElementById('credencial-name').innerText = name || '';
+      document.getElementById('credencial-code').innerText = code || '';
+      document.getElementById('credencial-initials').innerText = (name || code).split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      const qrDiv = document.getElementById('credencial-qr');
+      qrDiv.innerHTML = '';
+      if (window.QRCode) {
+        new QRCode(qrDiv, { text: code || '', width: 160, height: 160, colorDark: '#000000', colorLight: '#ffffff' });
+      } else {
+        qrDiv.innerText = code || '';
+      }
+      modal.classList.remove('hidden');
+    }
+    function closeCredentialModal() {
+      document.getElementById('credencial-modal')?.classList.add('hidden');
+    }
+    function printCredential() {
+      window.print();
+    }
     function openAddToolModal() {
       document.getElementById('modal-add-tool').classList.remove('hidden');
       const codeInput = document.getElementById('new-tool-code');
@@ -2473,6 +3332,7 @@
       renderAll();
       showToast('Nueva herramienta agregada correctamente', 'success');
       e.target.reset();
+      setTimeout(() => showCredentialModal('CREDENCIAL / CÓDIGO DE HERRAMIENTA', code, name, category), 600);
     }
 
     function saveNewEmployee(e) {
@@ -2507,6 +3367,7 @@
       renderAll();
       showToast('Empleado registrado correctamente', 'success');
       e.target.reset();
+      setTimeout(() => showCredentialModal('CREDENCIAL DE EMPLEADO', code, name, role), 600);
     }
 
     /* ================= PORTAL EMPLEADO LOGIC ================= */
@@ -3037,7 +3898,7 @@
         },
         {
           name: 'Vehiculos',
-          rows: state.fleetVehicles.map(vehicle => ({ 'TIPO': vehicle.type, 'PATENTE': vehicle.plate, 'MARCA_MODELO': vehicle.brandModel, 'KM': vehicle.km }))
+          rows: state.fleetVehicles.map(vehicle => ({ 'TIPO': vehicle.type, 'PATENTE': vehicle.plate, 'MARCA': vehicle.brand, 'MODELO': vehicle.model, 'KM': vehicle.km }))
         }
       ];
 
@@ -3103,7 +3964,7 @@
           if (Array.isArray(backup.maintenanceStaff)) {
             state.maintenanceStaff = backup.maintenanceStaff.map(normalizeMaintenanceRecord).filter(Boolean);
           }
-          if (Array.isArray(backup.fleetVehicles)) state.fleetVehicles = backup.fleetVehicles;
+          if (Array.isArray(backup.fleetVehicles)) state.fleetVehicles = backup.fleetVehicles.map(normalizeFleetVehicle);
           if (Array.isArray(backup.vehicleTrips)) state.vehicleTrips = backup.vehicleTrips;
 
           persistBusinessData();
@@ -3145,8 +4006,8 @@
         headers = ['FECHA_HORA', 'TIPO', 'ITEM', 'DETALLE'];
         rows = state.logs.map(log => [log.datetime, log.type, log.item, log.detail]);
       } else {
-        headers = ['TIPO', 'PATENTE', 'MARCA_MODELO', 'KM'];
-        rows = state.fleetVehicles.map(vehicle => [vehicle.type, vehicle.plate, vehicle.brandModel, vehicle.km]);
+        headers = ['TIPO', 'PATENTE', 'MARCA', 'MODELO', 'KM'];
+        rows = state.fleetVehicles.map(vehicle => [vehicle.type, vehicle.plate, vehicle.brand, vehicle.model, vehicle.km]);
       }
 
       head.innerHTML = `<tr>${headers.map(title => `<th class="p-2 border-b border-darkBorder">${title}</th>`).join('')}</tr>`;
@@ -3229,7 +4090,10 @@
     }
 
     /* ================= TOAST NOTIFICATION SYSTEM ================= */
-    function showToast(message, type = 'info') {
+    function showToast(message, type = 'info', silent = false) {
+      if (!silent) {
+        playUiSound(type === 'error' ? 'error' : (type === 'success' ? 'success' : 'notify'));
+      }
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       
