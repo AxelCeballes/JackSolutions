@@ -20,16 +20,16 @@
         extend: {
           colors: {
             black: '#000000',
-            darkBg: '#050510',
-            darkCard: '#0a0a14',
-            darkBorder: '#1a1a2e',
-            darkBorderHover: '#2a2a4e',
-            darkMuted: '#6b6b8a',
-            lightText: '#eaeaff',
-            accent: '#4f9bff',
-            accentGlow: '#00d4ff',
-            neonCyan: '#00e0ff',
-            neonBlue: '#4f9bff',
+            darkBg: '#1A213D',
+            darkCard: '#10162a',
+            darkBorder: '#252d4a',
+            darkBorderHover: '#3b4468',
+            darkMuted: '#9a9bb5',
+            lightText: '#EEEBDA',
+            accent: '#8b5cf6',
+            accentGlow: '#c084fc',
+            neonViolet: '#c084fc',
+            neonIndigo: '#8b5cf6',
           },
           fontFamily: {
             sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
@@ -48,31 +48,31 @@
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #050510;
+      background: #1A213D;
     }
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, #4f9bff 0%, #00e0ff 100%);
+      background: linear-gradient(180deg, #8b5cf6 0%, #c084fc 100%);
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, #6bb0ff 0%, #33e7ff 100%);
+      background: linear-gradient(180deg, #a78bfa 0%, #d8b4fe 100%);
     }
 
     /* Glassmorphism & Borders */
     .glass-panel {
-      background: radial-gradient(120% 120% at 50% 0%, rgba(79, 155, 255, 0.12) 0%, rgba(10, 10, 20, 0.9) 100%);
+      background: radial-gradient(120% 120% at 50% 0%, rgba(139, 92, 246, 0.12) 0%, rgba(16, 22, 42, 0.9) 100%);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(79, 155, 255, 0.25);
+      border: 1px solid rgba(139, 92, 246, 0.25);
     }
     .glass-card {
-      background: radial-gradient(140% 140% at 50% 0%, rgba(79, 155, 255, 0.08) 0%, rgba(10, 10, 20, 0.95) 100%);
-      border: 1px solid rgba(79, 155, 255, 0.18);
+      background: radial-gradient(140% 140% at 50% 0%, rgba(139, 92, 246, 0.08) 0%, rgba(16, 22, 42, 0.95) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.18);
       transition: all 0.25s ease-in-out;
-      box-shadow: 0 40px 80px -60px rgba(0, 224, 255, 0.25);
+      box-shadow: 0 40px 80px -60px rgba(192, 132, 252, 0.25);
     }
     .glass-card:hover {
-      border-color: rgba(0, 224, 255, 0.5);
-      box-shadow: 0 50px 90px -60px rgba(79, 155, 255, 0.35);
+      border-color: rgba(192, 132, 252, 0.5);
+      box-shadow: 0 50px 90px -60px rgba(139, 92, 246, 0.35);
     }
 
     /* Monochromatic Pulse Animation */
@@ -265,7 +265,14 @@
     }
   </style>
 </head>
-<body class="bg-gradient-to-b from-[#02020a] via-[#050510] to-black text-lightText font-sans antialiased min-h-screen flex flex-col selection:bg-neonCyan/80 selection:text-black">
+<body class="overflow-hidden bg-gradient-to-b from-[#10162a] via-[#1A213D] to-[#0b1020] text-lightText font-sans antialiased min-h-screen flex flex-col selection:bg-neonViolet/80 selection:text-black">
+
+  <div id="intro-overlay" class="fixed inset-0 z-[10000] h-screen w-screen overflow-hidden bg-black" role="dialog" aria-modal="true" aria-label="Video de introducción">
+    <video id="intro-video" class="absolute inset-0 h-full w-full object-cover" src="./assets/intro.mp4" autoplay muted playsinline onended="closeIntroVideo()">
+      Tu navegador no puede reproducir este video.
+    </video>
+    <p id="intro-video-error" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 rounded-lg bg-black/70 px-4 py-2 text-center text-sm text-white" role="status">No se pudo reproducir automáticamente el video.</p>
+  </div>
 
   <!-- ==================== HEADER & NAVIGATION ==================== -->
   <header class="sticky top-0 z-40 glass-panel border-b border-darkBorder">
@@ -273,7 +280,7 @@
       
       <!-- Logo -->
       <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('terminal')">
-        <img src="assets/jack-logo-new.jpeg" alt="Jack Solutions Logo" class="w-9 h-9 rounded-lg object-cover shadow-lg shadow-white/10 border border-white/10" />
+        <img src="assets/sitec-logo.png" alt="Logo de S.I.T.E.C" class="w-12 h-12 rounded-xl object-cover border border-neonViolet/60 bg-[#080812] shadow-[0_0_18px_rgba(192,132,252,0.4)]" />
         <div class="flex flex-col">
           <span class="font-bold tracking-wider text-sm text-white flex items-center gap-1.5">
             S.I.T.E.C <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-gray-300 font-mono">v2.4</span>
@@ -349,23 +356,23 @@
     <!-- PLANES + ¿QUÉ ES JACK SOLUTIONS? -->
     <section id="tab-planes" class="hidden space-y-12 py-4">
       <!-- Descripción del producto -->
-      <div class="relative overflow-hidden rounded-3xl border border-neonBlue/30">
-        <div class="absolute inset-0 -z-10">
+      <div class="relative isolate overflow-hidden rounded-3xl border border-neonIndigo/30">
+        <div class="absolute inset-0 z-0">
           <canvas id="flux-lines-canvas" class="w-full h-full"></canvas>
         </div>
-        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-[#050510]/70 to-black/90"></div>
-        <div class="text-center space-y-6 max-w-4xl mx-auto pt-10 pb-12 px-6 relative">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neonCyan/10 border border-neonCyan/40 text-xs font-mono text-neonCyan">
-            <span class="w-2 h-2 rounded-full bg-neonCyan animate-ping"></span>
+        <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-black/40 via-[#1A213D]/70 to-black/90"></div>
+        <div class="text-center space-y-6 max-w-4xl mx-auto pt-10 pb-12 px-6 relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neonViolet/10 border border-neonViolet/40 text-xs font-mono text-neonViolet">
+            <span class="w-2 h-2 rounded-full bg-neonViolet animate-ping"></span>
             PROYECTO JACK SOLUTIONS
           </div>
           <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white uppercase leading-none">
-            ¿Qué es <span class="bg-gradient-to-r from-white via-neonCyan to-neonBlue bg-clip-text text-transparent">JACK SOLUTIONS</span>?
+            ¿Qué es <span class="bg-gradient-to-r from-white via-neonViolet to-neonIndigo bg-clip-text text-transparent">JACK SOLUTIONS</span>?
           </h1>
           <p class="text-gray-300 text-sm sm:text-lg max-w-3xl mx-auto font-normal">
             <strong class="text-white">JACK SOLUTIONS</strong> es la plataforma de <strong class="text-white">S.I.T.E.C</strong> para digitalizar el control de pañol, la asistencia del personal, la flota de vehículos y el mantenimiento. Todo se gestiona con lector de código de barras, NFC y sincronización directa con Excel.
           </p>
-          <p class="text-neonCyan/80 text-xs sm:text-sm max-w-2xl mx-auto font-mono uppercase tracking-[0.4em]">
+          <p class="text-neonViolet/80 text-xs sm:text-sm max-w-2xl mx-auto font-mono uppercase tracking-[0.4em]">
             Un solo sistema · Menos planillas · Control en tiempo real
           </p>
         </div>
@@ -415,7 +422,7 @@
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-xs font-mono text-gray-400 tracking-wider">ENTRADA DE GAMA</span>
-              <span class="text-xs bg-neonBlue/10 border border-neonBlue/40 text-neonCyan px-2 py-0.5 rounded">NO PREMIUM</span>
+              <span class="text-xs bg-neonIndigo/10 border border-neonIndigo/40 text-neonViolet px-2 py-0.5 rounded">NO PREMIUM</span>
             </div>
             <h3 class="text-2xl font-bold text-white">Plan Estándar</h3>
             <p class="text-xs text-gray-400">Para talleres o depósitos que operan mediante código de barras y QR tradicional.</p>
@@ -437,28 +444,28 @@
         </div>
 
         <!-- Plan Premium -->
-        <div class="glass-card p-8 rounded-2xl border border-neonCyan/60 flex flex-col justify-between space-y-6 relative overflow-hidden">
-          <div class="absolute -right-16 -top-16 w-36 h-36 bg-neonCyan/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neonCyan to-transparent"></div>
+        <div class="glass-card p-8 rounded-2xl border border-neonViolet/60 flex flex-col justify-between space-y-6 relative overflow-hidden">
+          <div class="absolute -right-16 -top-16 w-36 h-36 bg-neonViolet/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neonViolet to-transparent"></div>
           <div class="space-y-4 relative">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-mono text-neonCyan tracking-wider font-bold">RECOMENDADO INDUSTRIAL</span>
-              <span class="text-xs bg-gradient-to-r from-neonBlue to-neonCyan text-black font-bold px-2.5 py-0.5 rounded">PREMIUM NFC</span>
+              <span class="text-xs font-mono text-neonViolet tracking-wider font-bold">RECOMENDADO INDUSTRIAL</span>
+              <span class="text-xs bg-gradient-to-r from-neonIndigo to-neonViolet text-black font-bold px-2.5 py-0.5 rounded">PREMIUM NFC</span>
             </div>
             <h3 class="text-2xl font-bold text-white">Plan Premium NFC</h3>
             <p class="text-xs text-gray-400">Máxima velocidad con lectura NFC sin contacto, auditoría y firmas digitales.</p>
             <div class="text-3xl font-extrabold text-white font-mono">$199 <span class="text-xs text-gray-500 font-normal">/ mes</span></div>
             
             <ul class="space-y-3 pt-2 text-xs text-gray-200">
-              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonCyan text-sm"></i> <strong>Todo lo del Plan Estándar incluido</strong></li>
-              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonCyan text-sm"></i> Lectura e identificación por NFC ultrarrápida</li>
-              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonCyan text-sm"></i> Sincronización en tiempo real con Google Sheets / Excel Online</li>
-              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonCyan text-sm"></i> Captura de Firma Digital de recepción en pantalla</li>
-              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonCyan text-sm"></i> Alertas automáticas de mantenimiento preventivo</li>
-              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonCyan text-sm"></i> Soporte prioritario 24/7 directo con S.I.T.E.C</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonViolet text-sm"></i> <strong>Todo lo del Plan Estándar incluido</strong></li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonViolet text-sm"></i> Lectura e identificación por NFC ultrarrápida</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonViolet text-sm"></i> Sincronización en tiempo real con Google Sheets / Excel Online</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonViolet text-sm"></i> Captura de Firma Digital de recepción en pantalla</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonViolet text-sm"></i> Alertas automáticas de mantenimiento preventivo</li>
+              <li class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-neonViolet text-sm"></i> Soporte prioritario 24/7 directo con S.I.T.E.C</li>
             </ul>
           </div>
-          <button onclick="showToast('Solicitud de Plan Premium NFC enviada a S.I.T.E.C', 'info')" class="relative w-full bg-gradient-to-r from-neonBlue to-neonCyan hover:from-white hover:to-neonCyan text-black font-bold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-neonCyan/20">
+          <button onclick="showToast('Solicitud de Plan Premium NFC enviada a S.I.T.E.C', 'info')" class="relative w-full bg-gradient-to-r from-neonIndigo to-neonViolet hover:from-white hover:to-neonViolet text-black font-bold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-neonViolet/20">
             Activar Plan Premium NFC
           </button>
         </div>
@@ -474,6 +481,8 @@
         container.style.inset = '0';
         container.style.width = '100%';
         container.style.height = '100%';
+        container.style.zIndex = '2';
+        container.style.pointerEvents = 'none';
         wrapper.parentElement.appendChild(container);
         wrapper.remove();
 
@@ -621,13 +630,13 @@
         const cnt = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS);
         for (let i = 0; i < cnt; i++) {
           const info = gl.getActiveUniform(prog, i);
-          if (info) uniforms[info.name] = gl.getUniformLocation(prog, info.name);
+          if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(prog, info.name);
         }
 
         const colors = [
-          [0.31, 0.61, 1.0],
-          [0.0, 0.88, 1.0],
-          [1.0, 1.0, 1.0]
+          [0.55, 0.36, 0.96],
+          [0.75, 0.46, 0.98],
+          [1.0, 0.93, 1.0]
         ];
 
         let time = 0, last = 0, raf = 0;
@@ -692,23 +701,28 @@
           if (!raf) raf = requestAnimationFrame(frame);
         }
 
+        window.resizeFluxLines = () => {
+          resize();
+          render();
+          wake();
+        };
+
         function locate(e) {
           const rect = container.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
           const dpr = canvas.width / Math.max(1, rect.width);
-          pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
+          pointer.inside = rect.width > 0 && rect.height > 0 && x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
           pointer.x = x * dpr;
           pointer.y = (rect.height - y) * dpr;
         }
 
-        container.addEventListener('pointermove', (e) => { locate(e); wake(); });
-        container.addEventListener('pointerdown', (e) => {
+        window.addEventListener('pointermove', (e) => { locate(e); wake(); });
+        window.addEventListener('pointerdown', (e) => {
           locate(e);
           if (!pointer.inside) return;
           swirl.x = pointer.x; swirl.y = pointer.y; swirl.age = 0; wake();
         });
-        container.addEventListener('pointerleave', () => { pointer.inside = false; });
         window.addEventListener('resize', () => { resize(); render(); wake(); });
 
         resize();
@@ -1836,6 +1850,12 @@
 
     /* ================= INIT & EVENT LISTENERS ================= */
     window.addEventListener('DOMContentLoaded', () => {
+      const introVideo = document.getElementById('intro-video');
+      introVideo.play().catch(error => {
+        console.warn('No se pudo iniciar automáticamente el video de introducción.', error);
+        introVideo.controls = true;
+        document.getElementById('intro-video-error').classList.remove('hidden');
+      });
       loadBusinessData();
       state.fleetVehicles = loadFleetVehicles();
       state.vehicleTrips = loadVehicleTrips();
@@ -1852,6 +1872,13 @@
         if (event.target.closest('button')) playUiSound('click');
       });
     });
+
+    function closeIntroVideo() {
+      const video = document.getElementById('intro-video');
+      video.pause();
+      document.getElementById('intro-overlay').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
 
     function renderAll() {
       try { renderInventoryTable(); } catch (err) { console.warn(err); }
@@ -1879,6 +1906,7 @@
 
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      if (tabId === 'planes') window.resizeFluxLines?.();
 
       document.getElementById('kiosk-result-overlay')?.classList.add('hidden');
       document.getElementById('credencial-modal')?.classList.add('hidden');
